@@ -8,17 +8,17 @@ import javafx.geometry.Point2D;
 
 public class SketchEvent extends Event {
 
-	private static final long serialVersionUID = 6298317566196151642L;
+    private static final long serialVersionUID = 6298317566196151642L;
 
-	private List<Point2D> sketchData;
+    private final List<Point2D> sketch;
 
-	public SketchEvent(final List<Point2D> sketchData) {
-		super(new EventType<>("SketchEvent"));
-		this.sketchData = sketchData;
-	}
+    public SketchEvent(final List<Point2D> sketchData) {
+        super(new EventType<>("SketchEvent"));
+        sketch = sketchData;
+    }
 
-	public List<Point2D> getSketchData() {
-		return sketchData;
-	}
+    public final List<Point2D> getSketchData() {
+        return sketch;
+    }
 
 }

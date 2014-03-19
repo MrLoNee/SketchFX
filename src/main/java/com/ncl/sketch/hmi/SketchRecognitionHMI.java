@@ -18,58 +18,60 @@ import com.ncl.sketch.agent.impl.SketchRecognitionAgentMockImpl;
 
 public class SketchRecognitionHMI extends Application {
 
-	private SketchRecognitionAgent sketchRecognitionAgent;
+    private SketchRecognitionAgent sketchRecognitionAgent;
 
-	private ScheduledExecutorService executor;
+    private ScheduledExecutorService executor;
 
-	@Override
-	public void start(final Stage stage) throws Exception {
-		sketchRecognitionAgent = new SketchRecognitionAgentMockImpl();
-		executor = Executors.newSingleThreadScheduledExecutor();
+    @Override
+    public void start(final Stage stage) throws Exception {
+        sketchRecognitionAgent = new SketchRecognitionAgentMockImpl();
+        executor = Executors.newSingleThreadScheduledExecutor();
 
-		final Group container = new Group();
-		final Scene scene = new Scene(container);
+        final Group container = new Group();
+        final Scene scene = new Scene(container);
 
-		final SketchListener sketchListener = new SketchListener(scene, container);
-		sketchListener.setOnSketchDone(new EventHandler<SketchEvent>() {
+        final SketchListener sketchListener = new SketchListener(scene, container);
+        sketchListener.setOnSketchDone(new EventHandler<SketchEvent>() {
 
-			@Override
-			public void handle(final SketchEvent sketchEvent) {
-				executor.execute(new Runnable() {
-					@Override
-					public void run() {
-						final RecognitionResult recognitionResult = sketchRecognitionAgent.recognize(sketchEvent.getSketchData());
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void handle(final SketchEvent sketchEvent) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        final RecognitionResult recognitionResult = sketchRecognitionAgent.recognize(sketchEvent
+                                .getSketchData());
 
-						final Shape shape = recognitionResult.getShape();
-						if (shape != null) {
-							Platform.runLater(new Runnable() {
-								@Override
-								public void run() {
-									container.getChildren().add(shape);
-								}
-							});
-						}
-					}
-				});
-			}
-		});
+                        final Shape shape = recognitionResult.getShape();
+                        if (shape != null) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    container.getChildren().add(shape);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
 
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(final WindowEvent event) {
-				System.exit(0);
-			}
-		});
-		stage.setScene(scene);
-		stage.centerOnScreen();
-		stage.setWidth(800);
-		stage.setHeight(600);
-		stage.toFront();
-		stage.setTitle("NCL Sketch Recognition Alpha Prototype");
-		stage.show();
-	}
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(final WindowEvent event) {
+                System.exit(0);
+            }
+        });
+        stage.setScene(scene);
+        stage.centerOnScreen();
+        stage.setWidth(800);
+        stage.setHeight(600);
+        stage.toFront();
+        stage.setTitle("NCL Sketch Recognition Alpha Prototype");
+        stage.show();
+    }
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
+    public static void main(final String[] args) {
+        Application.launch(args);
+    }
 }
