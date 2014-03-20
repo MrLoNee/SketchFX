@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
 public final class StrokeGeometryTest {
@@ -15,21 +12,21 @@ public final class StrokeGeometryTest {
 
     @Test
     public final void curvature() {
-        final List<Point> stroke = stroke();
+        final Stroke stroke = stroke();
         assertEquals(0.27604535, StrokeGeometry.curvature(stroke, 1, 2), 0.00001);
         assertEquals(0.12711770, StrokeGeometry.curvature(stroke, 4, 2), 0.00001);
     }
 
     @Test
     public final void direction() {
-        final List<Point> stroke = stroke();
+        final Stroke stroke = stroke();
         assertEquals(0.785398163, StrokeGeometry.direction(stroke, 1), 0.00001);
         assertEquals(Math.PI, StrokeGeometry.direction(stroke, 4), DELTA);
     }
 
     @Test
     public final void featureAreaLine() {
-        final List<Point> stroke = stroke();
+        final Stroke stroke = stroke();
         final Point start = newPoint2D(0, 8);
         final Point end = newPoint2D(8, 10);
         final Line line = mock(Line.class);
@@ -40,7 +37,7 @@ public final class StrokeGeometryTest {
 
     @Test
     public final void featureAreaPoint() {
-        final List<Point> stroke = stroke();
+        final Stroke stroke = stroke();
         final Point reference = newPoint2D(2.5, 2.5);
         assertEquals(25.0, StrokeGeometry.featureArea(stroke, reference), DELTA);
     }
@@ -52,14 +49,19 @@ public final class StrokeGeometryTest {
         return pt;
     }
 
-    private static List<Point> stroke() {
-        final List<Point> stroke = new ArrayList<>();
-        stroke.add(newPoint2D(0.0, 0.0));
-        stroke.add(newPoint2D(0.0, 5.0));
-        stroke.add(newPoint2D(2.5, 7.5));
-        stroke.add(newPoint2D(5.0, 5.0));
-        stroke.add(newPoint2D(5.0, 0.0));
+    private static Stroke stroke() {
+        final Stroke stroke = mock(Stroke.class);
+        Point pt = newPoint2D(0.0, 0.0);
+        when(stroke.get(0)).thenReturn(pt);
+        pt = newPoint2D(0.0, 5.0);
+        when(stroke.get(1)).thenReturn(pt);
+        pt = newPoint2D(2.5, 7.5);
+        when(stroke.get(2)).thenReturn(pt);
+        pt = newPoint2D(5.0, 5.0);
+        when(stroke.get(3)).thenReturn(pt);
+        pt = newPoint2D(5.0, 0.0);
+        when(stroke.get(4)).thenReturn(pt);
+        when(stroke.size()).thenReturn(5);
         return stroke;
     }
-
 }

@@ -1,6 +1,5 @@
 package com.ncl.sketch.agent.di;
 
-import java.util.List;
 
 /**
  * Helper functions pertaining to geometric calculation on strokes.
@@ -21,12 +20,12 @@ final class StrokeGeometry {
      * The authors of the paper set it to {@code 2} empirically as a tradeoff between the
      * suppression of noise and the sensitivity of vertex detection.
      * 
-     * @param stroke the list of {@link Point point}s that define the stroke
+     * @param stroke the {@link Stroke stroke}
      * @param n the index of the point in the stroke for which the curvature shall be computed
-     * @param k a small {@li nk Code integer} defining the neighborhood size around the n-th point
+     * @param k a small {@code integer} defining the neighborhood size around the n-th point
      * @return the curvature of the n-th stroke point
      */
-    static final double curvature(final List<Point> stroke, final int n, final int k) {
+    static final double curvature(final Stroke stroke, final int n, final int k) {
         double theta = 0.0;
         final int strokeSize = stroke.size();
         for (int i = n - k; i <= n + k - 1; i++) {
@@ -41,12 +40,12 @@ final class StrokeGeometry {
      * Returns the direction of the n-th stroke point. The result is an angle in
      * <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>.
      * 
-     * @param stroke the list of {@link Point point}s that define the stroke
+     * @param stroke the {@link Stroke stroke}
      * @param n the index of the point in the stroke for which the direction shall be computed
      * @return the direction of the n-th stroke point in <strong>radians</strong> in the range of
      *         -<i>pi</i> to <i>pi</i>
      */
-    static final double direction(final List<Point> stroke, final int n) {
+    static final double direction(final Stroke stroke, final int n) {
         return direction(stroke.get(n), stroke.get(absoluteIndex(stroke.size(), n + 1)));
     }
 
@@ -55,11 +54,11 @@ final class StrokeGeometry {
      * computed as the sum area of all the small quadrangles formed by two consecutive stroke points
      * and their foot points on the line.
      * 
-     * @param stroke the list of {@link Point point}s that define the stroke
+     * @param stroke the {@link Stroke stroke}
      * @param line the reference {@link Line line}
      * @return the feature area of the specified stroke to the specified {@link Line line}
      */
-    static final double featureArea(final List<Point> stroke, final Line line) {
+    static final double featureArea(final Stroke stroke, final Line line) {
         final int strokeSize = stroke.size();
         double area = 0.0;
         for (int i = 0; i < strokeSize - 1; i++) {
@@ -77,12 +76,12 @@ final class StrokeGeometry {
      * {@link Point point} which is equal to the sum area of all the small triangles formed by two
      * consecutive stroke points and that reference {@link Point point}.
      * 
-     * @param stroke the list of {@link Point point}s that define the stroke
+     * @param stroke the {@link Stroke stroke}
      * @param point the reference {@link Point point}
      * @return the feature area of the specified stroke against the specified reference
      *         {@link Point point}
      */
-    static final double featureArea(final List<Point> stroke, final Point point) {
+    static final double featureArea(final Stroke stroke, final Point point) {
         final int strokeSize = stroke.size();
         double area = 0.0;
         for (int i = 0; i < strokeSize - 1; i++) {
@@ -110,7 +109,13 @@ final class StrokeGeometry {
         return Math.atan2(dy, dx);
     }
 
-    private static double distance(final List<Point> stroke, final int from, final int to) {
+    private static double distance(final Point from, final Point to) {
+        final double a = from.x() - to.x();
+        final double b = from.y() - to.y();
+        return Math.sqrt(a * a + b * b);
+    }
+
+    private static double distance(final Stroke stroke, final int from, final int to) {
         double distance = 0.0;
         final int strokeSize = stroke.size();
         for (int i = from; i < to; i++) {
@@ -119,12 +124,6 @@ final class StrokeGeometry {
             distance += distance(fromPt, toPt);
         }
         return distance;
-    }
-
-    private static double distance(final Point from, final Point to) {
-        final double a = from.x() - to.x();
-        final double b = from.y() - to.y();
-        return Math.sqrt(a * a + b * b);
     }
 
     private static Point project(final Point point, final Line line) {
