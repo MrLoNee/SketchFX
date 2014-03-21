@@ -1,6 +1,5 @@
 package com.ncl.sketch.agent.di;
 
-
 /**
  * Helper functions pertaining to geometric calculation on strokes.
  * 
@@ -89,6 +88,16 @@ final class StrokeGeometry {
 
         }
         return area;
+    }
+
+    /**
+     * Returns the length of the specified {@link Line line}.
+     * 
+     * @param line the line
+     * @return the length of the specified {@link Line line}
+     */
+    static final double length(final Line line) {
+        return distance(line.start(), line.end());
     }
 
     private static int absoluteIndex(final int strokeSize, final int relativeIndex) {

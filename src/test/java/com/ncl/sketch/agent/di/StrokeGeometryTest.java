@@ -29,9 +29,7 @@ public final class StrokeGeometryTest {
         final Stroke stroke = stroke();
         final Point start = newPoint2D(0, 8);
         final Point end = newPoint2D(8, 10);
-        final Line line = mock(Line.class);
-        when(line.start()).thenReturn(start);
-        when(line.end()).thenReturn(end);
+        final Line line = new Line(start, end);
         assertEquals(66.5441176, StrokeGeometry.featureArea(stroke, line), DELTA);
     }
 
@@ -50,18 +48,7 @@ public final class StrokeGeometryTest {
     }
 
     private static Stroke stroke() {
-        final Stroke stroke = mock(Stroke.class);
-        Point pt = newPoint2D(0.0, 0.0);
-        when(stroke.get(0)).thenReturn(pt);
-        pt = newPoint2D(0.0, 5.0);
-        when(stroke.get(1)).thenReturn(pt);
-        pt = newPoint2D(2.5, 7.5);
-        when(stroke.get(2)).thenReturn(pt);
-        pt = newPoint2D(5.0, 5.0);
-        when(stroke.get(3)).thenReturn(pt);
-        pt = newPoint2D(5.0, 0.0);
-        when(stroke.get(4)).thenReturn(pt);
-        when(stroke.size()).thenReturn(5);
-        return stroke;
+        return new Stroke(0.0, newPoint2D(0.0, 0.0), newPoint2D(0.0, 5.0), newPoint2D(2.5, 7.5), newPoint2D(5.0, 5.0),
+                newPoint2D(5.0, 0.0));
     }
 }
