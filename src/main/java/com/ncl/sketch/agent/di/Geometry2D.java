@@ -1,27 +1,40 @@
 package com.ncl.sketch.agent.di;
 
-/**
- * Helper functions pertaining to geometric calculation on strokes.
- * 
- * @see http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&rep=rep1&type=pdf
- */
-final class StrokeGeometry {
+import com.ncl.sketch.agent.api.Line;
+import com.ncl.sketch.agent.api.Point;
+import com.ncl.sketch.agent.api.Stroke;
 
-    private StrokeGeometry() {
+/**
+ * Helper functions pertaining to geometric calculations on {@link Point 2D
+ * point}s.
+ * 
+ * @see http
+ *      ://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&rep=rep1
+ *      &type=pdf
+ */
+final class Geometry2D {
+
+    private Geometry2D() {
         // empty;
     }
 
     /**
-     * Returns the curvature - change in direction with respect to path length, of the n-th stroke
-     * point.
+     * Returns the curvature - change in direction with respect to path length,
+     * of the n-th stroke point.
      * <p>
-     * {@code k} k is a small {@code integer} defining the neighborhood size around the n-th point.
-     * The authors of the paper set it to {@code 2} empirically as a tradeoff between the
-     * suppression of noise and the sensitivity of vertex detection.
+     * {@code k} k is a small {@code integer} defining the neighborhood size
+     * around the n-th point. The authors of the paper set it to {@code 2}
+     * empirically as a tradeoff between the suppression of noise and the
+     * sensitivity of vertex detection.
      * 
-     * @param stroke the {@link Stroke stroke}
-     * @param n the index of the point in the stroke for which the curvature shall be computed
-     * @param k a small {@code integer} defining the neighborhood size around the n-th point
+     * @param stroke
+     *            the {@link Stroke stroke}
+     * @param n
+     *            the index of the point in the stroke for which the curvature
+     *            shall be computed
+     * @param k
+     *            a small {@code integer} defining the neighborhood size around
+     *            the n-th point
      * @return the curvature of the n-th stroke point
      */
     static final double curvature(final Stroke stroke, final int n, final int k) {
@@ -39,23 +52,30 @@ final class StrokeGeometry {
      * Returns the direction of the n-th stroke point. The result is an angle in
      * <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>.
      * 
-     * @param stroke the {@link Stroke stroke}
-     * @param n the index of the point in the stroke for which the direction shall be computed
-     * @return the direction of the n-th stroke point in <strong>radians</strong> in the range of
-     *         -<i>pi</i> to <i>pi</i>
+     * @param stroke
+     *            the {@link Stroke stroke}
+     * @param n
+     *            the index of the point in the stroke for which the direction
+     *            shall be computed
+     * @return the direction of the n-th stroke point in
+     *         <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>
      */
     static final double direction(final Stroke stroke, final int n) {
         return direction(stroke.get(n), stroke.get(absoluteIndex(stroke.size(), n + 1)));
     }
 
     /**
-     * Returns the feature area of the specified stroke to the specified {@link Line line} which is
-     * computed as the sum area of all the small quadrangles formed by two consecutive stroke points
-     * and their foot points on the line.
+     * Returns the feature area of the specified stroke to the specified
+     * {@link Line line} which is computed as the sum area of all the small
+     * quadrangles formed by two consecutive stroke points and their foot points
+     * on the line.
      * 
-     * @param stroke the {@link Stroke stroke}
-     * @param line the reference {@link Line line}
-     * @return the feature area of the specified stroke to the specified {@link Line line}
+     * @param stroke
+     *            the {@link Stroke stroke}
+     * @param line
+     *            the reference {@link Line line}
+     * @return the feature area of the specified stroke to the specified
+     *         {@link Line line}
      */
     static final double featureArea(final Stroke stroke, final Line line) {
         final int strokeSize = stroke.size();
@@ -71,14 +91,17 @@ final class StrokeGeometry {
     }
 
     /**
-     * Returns the feature area of the specified stroke against the specified reference
-     * {@link Point point} which is equal to the sum area of all the small triangles formed by two
-     * consecutive stroke points and that reference {@link Point point}.
+     * Returns the feature area of the specified stroke against the specified
+     * reference {@link Point point} which is equal to the sum area of all the
+     * small triangles formed by two consecutive stroke points and that
+     * reference {@link Point point}.
      * 
-     * @param stroke the {@link Stroke stroke}
-     * @param point the reference {@link Point point}
-     * @return the feature area of the specified stroke against the specified reference
-     *         {@link Point point}
+     * @param stroke
+     *            the {@link Stroke stroke}
+     * @param point
+     *            the reference {@link Point point}
+     * @return the feature area of the specified stroke against the specified
+     *         reference {@link Point point}
      */
     static final double featureArea(final Stroke stroke, final Point point) {
         final int strokeSize = stroke.size();
@@ -93,7 +116,8 @@ final class StrokeGeometry {
     /**
      * Returns the length of the specified {@link Line line}.
      * 
-     * @param line the line
+     * @param line
+     *            the line
      * @return the length of the specified {@link Line line}
      */
     static final double length(final Line line) {
@@ -148,12 +172,17 @@ final class StrokeGeometry {
 
             @Override
             public final double x() {
-                return y;
+                return x;
             }
 
             @Override
             public final double y() {
-                return x;
+                return y;
+            }
+
+            @Override
+            public final String toString() {
+                return "[" + x + ", " + y + "]";
             }
         };
     }

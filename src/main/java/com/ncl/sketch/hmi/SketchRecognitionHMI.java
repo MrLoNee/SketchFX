@@ -1,5 +1,6 @@
 package com.ncl.sketch.hmi;
 
+import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -8,13 +9,14 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.shape.Shape;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import com.ncl.sketch.agent.RecognitionResult;
-import com.ncl.sketch.agent.SketchRecognitionAgent;
-import com.ncl.sketch.agent.impl.SketchRecognitionAgentMockImpl;
+import com.ncl.sketch.agent.api.Line;
+import com.ncl.sketch.agent.api.RecognitionResult;
+import com.ncl.sketch.agent.api.SketchRecognitionAgent;
+import com.ncl.sketch.agent.di.DomainIndependentAgent;
 
 public class SketchRecognitionHMI extends Application {
 
@@ -24,7 +26,7 @@ public class SketchRecognitionHMI extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        sketchRecognitionAgent = new SketchRecognitionAgentMockImpl();
+        sketchRecognitionAgent = new DomainIndependentAgent();
         executor = Executors.newSingleThreadScheduledExecutor();
 
         final Group container = new Group();
@@ -42,17 +44,21 @@ public class SketchRecognitionHMI extends Application {
                         final RecognitionResult recognitionResult = sketchRecognitionAgent.recognize(sketchEvent
                                 .getSketchData());
 
-                        final Shape shape = recognitionResult.getShape();
-                        if (shape != null) {
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    container.getChildren().add(shape);
+                        final Collection<Line> lines = recognitionResult.lines();
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (final Line line : lines) {
+                                    final javafx.scene.shape.Line lineFx = new javafx.scene.shape.Line(
+                                            line.start().x(), line.start().y(), line.end().x(), line.end().y());
+                                    lineFx.setStroke(Color.DARKGRAY);
+                                    container.getChildren().add(lineFx);
                                 }
-                            });
-                        }
+                            }
+                        });
                     }
                 });
+                sketchEvent.consume();
             }
         });
 

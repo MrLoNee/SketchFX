@@ -1,44 +1,57 @@
 package com.ncl.sketch.agent.di;
 
+import java.util.logging.Logger;
+
+import com.ncl.sketch.agent.api.Line;
+import com.ncl.sketch.agent.api.Point;
+import com.ncl.sketch.agent.api.Stroke;
+
 final class LinePatternRecognizer implements PatternRecognizer {
 
-    private final double maxSse;
+    private static final double MIN_CORRELATION = 0.8;
+
+    private static final Logger LOGGER = Logger.getLogger("DomainIndependent");
 
     private final double maxAreaRatio;
 
     /**
      * Constructor.
      * 
-     * @param aMaxSse maximum error sum of squares above which the regression line will be
-     *            considered unacceptable
-     * @param aMaxAreaRatio max ratio (feature area of this stroke to the candidate line / candidate
-     *            line area) above which the candidate line found by linear regression will be
-     *            considered unacceptable. A good value is {@code 1.0}
+     * @param aMaxAreaRatio
+     *            max ratio (feature area of this stroke to the candidate line /
+     *            candidate line area) above which the candidate line found by
+     *            linear regression will be considered unacceptable. A good
+     *            value is {@code 1.0}
      */
-    LinePatternRecognizer(final double aMaxSse, final double aMaxAreaRatio) {
-        maxSse = aMaxSse;
+    LinePatternRecognizer(final double aMaxAreaRatio) {
         maxAreaRatio = aMaxAreaRatio;
     }
 
     @Override
-    public final boolean recognize(final Stroke stroke) {
+    public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {
         final boolean lsrlAcceptable = leastSquaresRegressionLineAcceptable(stroke);
-        final boolean result;
+        final boolean isLine;
         if (lsrlAcceptable) {
             final Line candidate = new Line(stroke.get(0), stroke.get(stroke.size() - 1));
-            final double featureArea = StrokeGeometry.featureArea(stroke, candidate);
-            final double lineArea = StrokeGeometry.length(candidate) * stroke.width();
-            result = featureArea / lineArea < maxAreaRatio;
+            final double featureArea = Geometry2D.featureArea(stroke, candidate);
+            final double lineArea = Geometry2D.length(candidate) * stroke.width();
+            final double areaRatio = featureArea / lineArea;
+            isLine = areaRatio < maxAreaRatio;
+            LOGGER.info("Feature area: " + featureArea + "; Line area: " + lineArea + "; ratio: " + areaRatio);
+            if (isLine) {
+                result.add(candidate);
+            }
         } else {
-            result = false;
+            isLine = false;
         }
-        return result;
+        LOGGER.info("Recognized: " + isLine);
+        return isLine;
     }
 
     /**
      * @see http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf
      */
-    private boolean leastSquaresRegressionLineAcceptable(final Stroke stroke) {
+    private static boolean leastSquaresRegressionLineAcceptable(final Stroke stroke) {
         final int strokeSize = stroke.size();
         final double[] x = new double[strokeSize];
         final double[] y = new double[strokeSize];
@@ -82,7 +95,26 @@ final class LinePatternRecognizer implements PatternRecognizer {
             sse += (fit - y[i]) * (fit - y[i]);
         }
 
-        return sse < maxSse;
+        /*
+         * compute total sum of squares: sst
+         */
+
+        double sst = 0.0;
+        for (int i = 0; i < strokeSize; i++) {
+            sst += (ybar - y[i]) * (ybar - y[i]);
+        }
+
+        /*
+         * compute coefficient of determination: r2
+         */
+
+        final double r2 = 1 - sse / sst;
+
+        final StringBuilder msg = new StringBuilder("Least-squares regression result: y = ").append(a).append(" + ")
+                .append(b).append("x; sse = ").append(sse).append("; sst = ").append(sst).append("; r2 = ").append(r2);
+        LOGGER.info(msg.toString());
+
+        return Double.isNaN(r2) || r2 >= MIN_CORRELATION;
 
     }
 
