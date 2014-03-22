@@ -18,7 +18,7 @@ public final class LinePatternRecognizerTest {
 
         final double[] x = { 0, 1, 2, 3, 4 };
         final double[] y = { 0, 1, 2, 3, 4 };
-        final Stroke stroke = Strokes.stroke(x, y);
+        final Stroke stroke = GeometricElements.stroke(x, y);
         final Point first = stroke.get(0);
         final Point last = stroke.get(4);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
@@ -35,7 +35,7 @@ public final class LinePatternRecognizerTest {
         final LinePatternRecognizer recognizer = new LinePatternRecognizer(1.0);
         final double[] x = { 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 };
         final double[] y = { 115, 117, 120, 123, 126, 129, 132, 135, 139, 142, 146, 150, 154, 159, 164 };
-        final Stroke stroke = Strokes.stroke(x, y);
+        final Stroke stroke = GeometricElements.stroke(x, y);
         final Point first = stroke.get(0);
         final Point last = stroke.get(14);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
@@ -53,7 +53,7 @@ public final class LinePatternRecognizerTest {
 
         final double[] x = { 0, 1, 2, 3, 4 };
         final double[] y = { 0, 0, 0, 0, 0 };
-        final Stroke stroke = Strokes.stroke(x, y);
+        final Stroke stroke = GeometricElements.stroke(x, y);
         final Point first = stroke.get(0);
         final Point last = stroke.get(4);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
@@ -71,7 +71,7 @@ public final class LinePatternRecognizerTest {
 
         final double[] x = { 0, 0, 0, 0, 0 };
         final double[] y = { 0, 1, 2, 3, 4 };
-        final Stroke stroke = Strokes.stroke(x, y);
+        final Stroke stroke = GeometricElements.stroke(x, y);
         final Point first = stroke.get(0);
         final Point last = stroke.get(4);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
@@ -89,7 +89,7 @@ public final class LinePatternRecognizerTest {
 
         final double[] x = { 0, 0, 2.5, 5.0, 5.0 };
         final double[] y = { 0, 5, 7.5, 5.0, 0 };
-        final Stroke stroke = Strokes.stroke(x, y);
+        final Stroke stroke = GeometricElements.stroke(x, y);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));

@@ -12,10 +12,8 @@ public final class Line {
     /**
      * Constructor.
      * 
-     * @param aStart
-     *            start {@link Point point} of this line
-     * @param anEnd
-     *            end {@link Point point} of this line
+     * @param aStart start {@link Point point} of this line
+     * @param anEnd end {@link Point point} of this line
      */
     public Line(final Point aStart, final Point anEnd) {
         start = aStart;
@@ -38,6 +36,16 @@ public final class Line {
      */
     public final Point start() {
         return start;
+    }
+    
+    @Override
+    public final String toString() {
+        final StringBuilder sb = new StringBuilder("Line [from: ");
+        sb.append(start);
+        sb.append("; to: ");
+        sb.append(end);
+        sb.append("]");
+        return sb.toString();
     }
 
 }

@@ -5,8 +5,8 @@ import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A domain-independent {@link SketchRecognitionAgent}. This agent makes on no
- * assumption on the context in which the sketch was drawn.
+ * A domain-independent {@link SketchRecognitionAgent}. This agent makes no
+ * assumption about the context in which the sketch was drawn.
  */
 public final class DomainIndependentAgent implements SketchRecognitionAgent {
 

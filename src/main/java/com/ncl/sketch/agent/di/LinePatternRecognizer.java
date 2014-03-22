@@ -17,11 +17,10 @@ final class LinePatternRecognizer implements PatternRecognizer {
     /**
      * Constructor.
      * 
-     * @param aMaxAreaRatio
-     *            max ratio (feature area of this stroke to the candidate line /
-     *            candidate line area) above which the candidate line found by
-     *            linear regression will be considered unacceptable. A good
-     *            value is {@code 1.0}
+     * @param aMaxAreaRatio max ratio (feature area of this stroke to the
+     *        candidate line / candidate line area) above which the candidate
+     *        line found by linear regression will be considered unacceptable. A
+     *        good value is {@code 1.0}
      */
     LinePatternRecognizer(final double aMaxAreaRatio) {
         maxAreaRatio = aMaxAreaRatio;
@@ -29,27 +28,28 @@ final class LinePatternRecognizer implements PatternRecognizer {
 
     @Override
     public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {
+        LOGGER.info("Processing stroke with " + stroke.size() + " points");
         final boolean lsrlAcceptable = leastSquaresRegressionLineAcceptable(stroke);
         final boolean isLine;
         if (lsrlAcceptable) {
             final Line candidate = new Line(stroke.get(0), stroke.get(stroke.size() - 1));
-            final double featureArea = Geometry2D.featureArea(stroke, candidate);
+            final double featureArea = Strokes.featureArea(stroke, candidate);
             final double lineArea = Geometry2D.length(candidate) * stroke.width();
             final double areaRatio = featureArea / lineArea;
             isLine = areaRatio < maxAreaRatio;
-            LOGGER.info("Feature area: " + featureArea + "; Line area: " + lineArea + "; ratio: " + areaRatio);
+            LOGGER.fine("Feature area: " + featureArea + "; Line area: " + lineArea + "; ratio: " + areaRatio);
             if (isLine) {
+                LOGGER.info("Recognized line: " + candidate);
                 result.add(candidate);
             }
         } else {
             isLine = false;
         }
-        LOGGER.info("Recognized: " + isLine);
         return isLine;
     }
 
     /**
-     * @see http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf
+     * @see {@link http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf}
      */
     private static boolean leastSquaresRegressionLineAcceptable(final Stroke stroke) {
         final int strokeSize = stroke.size();
@@ -112,7 +112,7 @@ final class LinePatternRecognizer implements PatternRecognizer {
 
         final StringBuilder msg = new StringBuilder("Least-squares regression result: y = ").append(a).append(" + ")
                 .append(b).append("x; sse = ").append(sse).append("; sst = ").append(sst).append("; r2 = ").append(r2);
-        LOGGER.info(msg.toString());
+        LOGGER.fine(msg.toString());
 
         return Double.isNaN(r2) || r2 >= MIN_CORRELATION;
 

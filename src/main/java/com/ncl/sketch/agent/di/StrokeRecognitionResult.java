@@ -29,8 +29,7 @@ final class StrokeRecognitionResult implements RecognitionResult {
     /**
      * Adds the specified {@link Line line} to the list of recognized lines.
      * 
-     * @param line
-     *            the line to add
+     * @param line the line to add
      * @return this {@link StrokeRecognitionResult} for chainable calls
      */
     final StrokeRecognitionResult add(final Line line) {

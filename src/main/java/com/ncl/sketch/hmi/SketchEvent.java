@@ -37,6 +37,11 @@ public class SketchEvent extends Event {
                 public double x() {
                     return pt.getY();
                 }
+                
+                @Override
+                public final String toString() {
+                    return "[" + x() + ", " + y() + "]";
+                }
             };
             i++;
         }

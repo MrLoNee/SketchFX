@@ -6,44 +6,83 @@ import org.junit.Test;
 
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
-import com.ncl.sketch.agent.api.Stroke;
 
 public final class Geometry2DTest {
 
     private static final double DELTA = 0.00001;
 
     @Test
-    public final void curvature() {
-        final Stroke stroke = stroke();
-        assertEquals(0.27604535, Geometry2D.curvature(stroke, 1, 2), 0.00001);
-        assertEquals(0.12711770, Geometry2D.curvature(stroke, 4, 2), 0.00001);
+    public final void distance() {
+        final Point from = GeometricElements.point(5.6, -18.9);
+        final Point to = GeometricElements.point(154, 89.45);
+        assertEquals(183.74515639, Geometry2D.distance(from, to), DELTA);
     }
 
     @Test
-    public final void direction() {
-        final Stroke stroke = stroke();
-        assertEquals(0.785398163, Geometry2D.direction(stroke, 1), 0.00001);
-        assertEquals(Math.PI, Geometry2D.direction(stroke, 4), DELTA);
-    }
-
-    @Test
-    public final void featureAreaLine() {
-        final Stroke stroke = stroke();
-        final Point start = Points.point(0, 8);
-        final Point end = Points.point(8, 10);
+    public final void length() {
+        final Point start = GeometricElements.point(5.6, -18.9);
+        final Point end = GeometricElements.point(154, 89.45);
         final Line line = new Line(start, end);
-        assertEquals(66.5441176, Geometry2D.featureArea(stroke, line), DELTA);
+        assertEquals(183.74515639, Geometry2D.length(line), DELTA);
     }
 
     @Test
-    public final void featureAreaPoint() {
-        final Stroke stroke = stroke();
-        final Point reference = Points.point(2.5, 2.5);
-        assertEquals(25.0, Geometry2D.featureArea(stroke, reference), DELTA);
+    public final void triangleArea() {
+        final Point a = GeometricElements.point(5.6, -18.9);
+        final Point b = GeometricElements.point(154, 89.45);
+        final Point c = GeometricElements.point(36.8, -28.75);
+        assertEquals(2421.13, Geometry2D.areaOf(a, b, c), DELTA);
     }
 
-    private static Stroke stroke() {
-        return new Stroke(0.0, Points.point(0.0, 0.0), Points.point(0.0, 5.0), Points.point(2.5, 7.5), Points.point(
-                5.0, 5.0), Points.point(5.0, 0.0));
+    @Test
+    public final void quadriangleArea() {
+        final Point a = GeometricElements.point(1, 1);
+        final Point b = GeometricElements.point(1, 5);
+        final Point c = GeometricElements.point(5, 5);
+        final Point d = GeometricElements.point(5, 1);
+        assertEquals(16.0, Geometry2D.areaOf(a, b, c, d), DELTA);
     }
+    
+    @Test
+    public final void selfIntersectingQuadriangleArea() {
+        final Point a = GeometricElements.point(1, 1);
+        final Point b = GeometricElements.point(1, 5);
+        final Point c = GeometricElements.point(5, 1);
+        final Point d = GeometricElements.point(5, 5);
+        assertEquals(8.0, Geometry2D.areaOf(a, b, c, d), DELTA);
+    }
+    
+    @Test
+    public final void projectOnVerticalLine() {
+        final Point a = GeometricElements.point(148.4, -18.9);
+        final Point start = GeometricElements.point(5.6, -25.4);
+        final Point end = GeometricElements.point(5.6, 89.45);
+        final Line line = new Line(start, end);
+        final Point projection = Geometry2D.project(a, line);
+        assertEquals(5.6, projection.x(), DELTA);
+        assertEquals(-18.9, projection.y(), DELTA);
+    }
+    
+    @Test
+    public final void projectOnHorizontalLine() {
+        final Point a = GeometricElements.point(148.4, -18.9);
+        final Point start = GeometricElements.point(5.6, -25.4);
+        final Point end = GeometricElements.point(14.32, -25.4);
+        final Line line = new Line(start, end);
+        final Point projection = Geometry2D.project(a, line);
+        assertEquals(148.4, projection.x(), DELTA);
+        assertEquals(-25.4, projection.y(), DELTA);
+    }
+    
+    @Test
+    public final void project() {
+        final Point a = GeometricElements.point(5.6, -18.9);
+        final Point start = GeometricElements.point(154, 89.45);
+        final Point end = GeometricElements.point(36.8, -28.75);
+        final Line line = new Line(start, end);
+        final Point projection = Geometry2D.project(a, line);
+        assertEquals(26.257360728, projection.x(), DELTA);
+        assertEquals(-39.382593532, projection.y(), DELTA);
+    }
+
 }

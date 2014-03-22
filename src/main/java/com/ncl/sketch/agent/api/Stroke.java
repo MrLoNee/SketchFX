@@ -16,10 +16,8 @@ public final class Stroke {
     /**
      * Constructor.
      * 
-     * @param aWidth
-     *            stroke width
-     * @param somePoints
-     *            points defining the stroke
+     * @param aWidth stroke width
+     * @param somePoints points defining the stroke
      */
     public Stroke(final double aWidth, final Point... somePoints) {
         width = aWidth;
@@ -29,8 +27,7 @@ public final class Stroke {
     /**
      * Returns the {@link Point point} at the specified index in this stroke.
      * 
-     * @param index
-     *            index of the {@link Point point} to be returned
+     * @param index index of the {@link Point point} to be returned
      * @return the {@link Point point} at the specified index in this stroke
      */
     public final Point get(final int index) {
