@@ -29,12 +29,12 @@ public class SketchEvent extends Event {
             result[i] = new Point() {
 
                 @Override
-                public double y() {
+                public final double x() {
                     return pt.getX();
                 }
-
+                
                 @Override
-                public double x() {
+                public final double y() {
                     return pt.getY();
                 }
                 

@@ -54,8 +54,7 @@ public class SketchListener implements EventHandler<MouseEvent> {
 
             final List<Point2D> notificationList = new ArrayList<>(sketch);
             sketch.clear();
-            // sketchDrawing.getPoints().clear();
-
+            
             final SketchEvent sketchEvent = new SketchEvent(notificationList);
             for (final EventHandler<SketchEvent> listener : listeners) {
                 listener.handle(sketchEvent);
