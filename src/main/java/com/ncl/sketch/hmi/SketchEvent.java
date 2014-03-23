@@ -9,7 +9,7 @@ import javafx.geometry.Point2D;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
 
-public class SketchEvent extends Event {
+final class SketchEvent extends Event {
 
     private static final EventType<Event> EVENT_TYPE = new EventType<>("SketchEvent");
 
@@ -17,12 +17,12 @@ public class SketchEvent extends Event {
 
     private final Stroke stroke;
 
-    public SketchEvent(final List<Point2D> sketchData) {
+    SketchEvent(final List<Point2D> sketchData) {
         super(EVENT_TYPE);
         stroke = new Stroke(1.0, points(sketchData));
     }
 
-    public final Stroke getSketchData() {
+    final Stroke getSketchData() {
         return stroke;
     }
 

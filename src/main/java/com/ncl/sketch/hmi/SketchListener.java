@@ -10,15 +10,17 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Polyline;
 
-public class SketchListener implements EventHandler<MouseEvent> {
+final class SketchListener implements EventHandler<MouseEvent> {
 
     private final List<Point2D> sketch;
+    
     private Polyline sketchDrawing;
 
     private final List<EventHandler<SketchEvent>> listeners;
+    
     private final Group container;
 
-    public SketchListener(final Scene scene, final Group aContainer) {
+    SketchListener(final Scene scene, final Group aContainer) {
         sketch = new ArrayList<>();
         listeners = new ArrayList<>();
 
@@ -29,7 +31,7 @@ public class SketchListener implements EventHandler<MouseEvent> {
     }
 
     @Override
-    public void handle(final MouseEvent event) {
+    public final void handle(final MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             // initialize the sketch
             sketchDrawing = new Polyline();
@@ -58,7 +60,7 @@ public class SketchListener implements EventHandler<MouseEvent> {
         }
     }
 
-    public void setOnSketchDone(final EventHandler<SketchEvent> handler) {
+    final void setOnSketchDone(final EventHandler<SketchEvent> handler) {
         listeners.add(handler);
     }
 

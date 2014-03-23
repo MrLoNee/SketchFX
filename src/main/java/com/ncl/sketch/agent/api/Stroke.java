@@ -53,9 +53,9 @@ public final class Stroke {
      * empty.
      * 
      * @see List#subList(int, int)
-     * @param fromIndex
-     * @param toIndex
-     * @return
+     * @param fromIndex low endpoint (inclusive) of the sub stroke
+     * @param toIndex high endpoint (exclusive) of the sub stroke
+     * @return a view of the specified range within this stroke
      */
     public final Stroke subStroke(final int fromIndex, final int toIndex) {
         final List<Point> sub = points.subList(fromIndex, toIndex);
