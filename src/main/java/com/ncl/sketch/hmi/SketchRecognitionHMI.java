@@ -51,7 +51,7 @@ public class SketchRecognitionHMI extends Application {
                                 for (final Line line : lines) {
                                     final javafx.scene.shape.Line lineFx = new javafx.scene.shape.Line(
                                             line.start().x(), line.start().y(), line.end().x(), line.end().y());
-                                    lineFx.setStroke(Color.GREENYELLOW);
+                                    lineFx.setStroke(Color.GREEN);
                                     container.getChildren().add(lineFx);
                                 }
                             }
