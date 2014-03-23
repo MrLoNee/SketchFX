@@ -39,36 +39,25 @@ final class Geometry2D {
      *         vertices
      */
     static final double areaOf(final Point a, final Point b, final Point c, final Point d) {
-        /*
-         * account for self-intersecting quadrilaterals: compute signed area of
-         * triangles (a, b, c) and (c, d, a).
-         */
-        final double a1 = signedAreaOf(a, b, c);
-        final double a2 = signedAreaOf(c, d, a);
         final double area;
-        if (a1 * a2 >= 0) {
+        final double[] intersection = intersection(a, d, c, b);
+        if (intersection == null) {
             /*
-             * same sign, simple quadrilateral. Add the two areas. If
-             * quadrilateral is concave this will also work.
+             * Simple quadrilateral. Add the two areas. If quadrilateral is
+             * concave this will also work.
              */
+            final double a1 = signedAreaOf(a, b, c);
+            final double a2 = signedAreaOf(c, d, a);
             area = Math.abs(a1 + a2);
+        } else if (intersection.length == 0) {
+            area = 0.0;
         } else {
+            final Point i = point(intersection[0], intersection[1]);
             /*
-             * self intersecting quadrilateral. Compute intersection.
+             * area is the sum of the area of the two triangle intersecting at
+             * i.
              */
-            final Point i = intersection(a, d, c, b);
-            if (i == null) {
-                /*
-                 * no intersection, area is 0
-                 */
-                area = 0;
-            } else {
-                /*
-                 * area is the sum of the area of the two triangle intersecting
-                 * at i.
-                 */
-                area = areaOf(a, b, i) + areaOf(i, d, c);
-            }
+            area = areaOf(a, b, i) + areaOf(i, d, c);
         }
         return area;
     }
@@ -130,28 +119,40 @@ final class Geometry2D {
         return x(v1) * y(v2) - x(v2) * y(v1);
     }
 
-    private static Point intersection(final Point a, final Point b, final Point c, final Point d) {
-        final double x1 = a.x();
-        final double y1 = a.y();
-        final double x2 = b.x();
-        final double y2 = b.y();
-        final double x3 = c.x();
-        final double y3 = c.y();
-        final double x4 = d.x();
-        final double y4 = d.y();
-
-        final double divisor = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-        final Point intersection;
-        if (Math.abs(divisor) < ZERO) {
-            intersection = null;
+    /*
+     * returns [x,y] if such an intersection exists, [] if the two lines are
+     * collinear, null otherwise.
+     */
+    private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
+        final double[] p = vector(a);
+        final double[] r = vector(a, b);
+        final double[] q = vector(c);
+        final double[] s = vector(c, d);
+        final double[] qp = subtract(q, p);
+        final double rs = exteriorProductOf(r, s);
+        final double qpr = exteriorProductOf(qp, r);
+        final double[] result;
+        if (isZero(qpr) && isZero(rs)) {
+            // collinear
+            result = new double[] {};
+        } else if (isZero(rs)) {
+            // parrallel
+            result = null;
         } else {
-            final double ab = x1 * y2 - y1 * x2;
-            final double cd = x3 * y4 - y3 * x4;
-            final double xi = (ab * (x3 - x4) - (x1 - x2) * cd) / divisor;
-            final double yi = (ab * (y3 - y4) - (y1 - y2) * cd) / divisor;
-            intersection = point(xi, yi);
+            final double t = exteriorProductOf(qp, s) / rs;
+            final double u = qpr / rs;
+            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                result = add(p, scale(t, r));
+            } else {
+                // intersection outside lines
+                result = null;
+            }
         }
-        return intersection;
+        return result;
+    }
+
+    private static boolean isZero(final double val) {
+        return Math.abs(val) < ZERO;
     }
 
     private static Point point(final double x, final double y) {
@@ -178,8 +179,14 @@ final class Geometry2D {
         return new double[] { scale * x(v), scale * y(v) };
     }
 
+    // vector from "from" to "to".
     private static double[] vector(final Point from, final Point to) {
         return new double[] { to.x() - from.x(), to.y() - from.y() };
+    }
+
+    // vector from origin (0,0) to point.
+    private static double[] vector(final Point pt) {
+        return new double[] { pt.x(), pt.y() };
     }
 
     private static double x(final double[] v) {
@@ -188,6 +195,14 @@ final class Geometry2D {
 
     private static double y(final double[] v) {
         return v[1];
+    }
+
+    private static double[] add(final double[] v1, final double[] v2) {
+        return new double[] { x(v1) + x(v2), y(v1) + y(v2) };
+    }
+
+    private static double[] subtract(final double[] v1, final double[] v2) {
+        return new double[] { x(v1) - x(v2), y(v1) - y(v2) };
     }
 
 }
