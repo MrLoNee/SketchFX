@@ -13,11 +13,11 @@ import javafx.scene.shape.Polyline;
 final class SketchListener implements EventHandler<MouseEvent> {
 
     private final List<Point2D> sketch;
-    
+
     private Polyline sketchDrawing;
 
     private final List<EventHandler<SketchEvent>> listeners;
-    
+
     private final Group container;
 
     SketchListener(final Scene scene, final Group aContainer) {

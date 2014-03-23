@@ -111,6 +111,10 @@ final class Geometry2D {
         return 0.5 * exteriorProductOf(v1, v2);
     }
 
+    private static double[] add(final double[] v1, final double[] v2) {
+        return new double[] { x(v1) + x(v2), y(v1) + y(v2) };
+    }
+
     private static double dotProductOf(final double[] v1, final double[] v2) {
         return x(v1) * x(v2) + y(v1) * y(v2);
     }
@@ -179,14 +183,18 @@ final class Geometry2D {
         return new double[] { scale * x(v), scale * y(v) };
     }
 
-    // vector from "from" to "to".
-    private static double[] vector(final Point from, final Point to) {
-        return new double[] { to.x() - from.x(), to.y() - from.y() };
+    private static double[] subtract(final double[] v1, final double[] v2) {
+        return new double[] { x(v1) - x(v2), y(v1) - y(v2) };
     }
 
     // vector from origin (0,0) to point.
     private static double[] vector(final Point pt) {
         return new double[] { pt.x(), pt.y() };
+    }
+
+    // vector from "from" to "to".
+    private static double[] vector(final Point from, final Point to) {
+        return new double[] { to.x() - from.x(), to.y() - from.y() };
     }
 
     private static double x(final double[] v) {
@@ -195,14 +203,6 @@ final class Geometry2D {
 
     private static double y(final double[] v) {
         return v[1];
-    }
-
-    private static double[] add(final double[] v1, final double[] v2) {
-        return new double[] { x(v1) + x(v2), y(v1) + y(v2) };
-    }
-
-    private static double[] subtract(final double[] v1, final double[] v2) {
-        return new double[] { x(v1) - x(v2), y(v1) - y(v2) };
     }
 
 }
