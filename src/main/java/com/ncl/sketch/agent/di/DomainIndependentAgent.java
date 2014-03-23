@@ -37,7 +37,7 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
         final boolean recognized = lineRecognizer.recognize(stroke, result);
         if (!recognized) {
             recognize(stroke, result);
-        }
+        }        
         return result;
     }
 

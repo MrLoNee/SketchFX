@@ -13,14 +13,6 @@ public final class StrokesTest {
     private static final double DELTA = 0.00001;
 
     @Test
-    public final void curvature() {
-        final Stroke stroke = stroke();
-        assertEquals(0.27604535, Strokes.curvature(stroke, 1, 2), 0.00001);
-        assertEquals(0.27604535, Strokes.curvature(stroke, 2, 2), 0.00001);
-        assertEquals(0.25423540, Strokes.curvature(stroke, 4, 2), 0.00001);
-    }
-
-    @Test
     public final void direction() {
         final Stroke stroke = stroke();
         assertEquals(0.785398163, Strokes.direction(stroke, 1), 0.00001);
@@ -54,7 +46,7 @@ public final class StrokesTest {
         final double[] x = { 0, 0, 2.5 };
         final double[] y = { 0, 5, 7.5 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        assertEquals(-1, Strokes.indexOfMaxCurvature(stroke, 2));
+        assertEquals(1, Strokes.indexOfMaxCurvature(stroke, 2));
     }
 
     private static Stroke stroke() {

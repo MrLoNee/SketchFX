@@ -20,36 +20,6 @@ final class Strokes {
     }
 
     /**
-     * Returns the curvature - change in direction with respect to path length,
-     * of the n-th stroke point.
-     * <p>
-     * {@code k} k is a small {@code integer} defining the neighborhood size
-     * around the n-th point. The authors of the paper set it to {@code 2}
-     * empirically as a tradeoff between the suppression of noise and the
-     * sensitivity of vertex detection.
-     * 
-     * @param stroke the {@link Stroke stroke}
-     * @param n the index of the point in the stroke for which the curvature
-     *        shall be computed
-     * @param k a small {@code integer} defining the neighborhood size around
-     *        the n-th point
-     * @return the curvature of the n-th stroke point
-     */
-    static final double curvature(final Stroke stroke, final int n, final int k) {
-        double theta = 0.0;
-        final int strokeSize = stroke.size();
-        double di = direction(stroke, absoluteIndex(strokeSize, n - k));
-        for (int i = n - k; i <= n + k - 1; i++) {
-            final double di1 = direction(stroke, absoluteIndex(strokeSize, i + 1));
-            theta += shift(di1 - di);
-            di = di1;
-        }
-        theta = Math.abs(theta);
-        final double distance = distance(stroke, n - k, n + k);
-        return theta / distance;
-    }
-
-    /**
      * Returns the direction of the n-th stroke point. The result is an angle in
      * <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>.
      * 
@@ -110,23 +80,31 @@ final class Strokes {
 
     /**
      * Returns the index of the {@link Point point} in the specified
-     * {@link Stroke stroke} which has the highest
-     * {@link #curvature(Stroke, int, int) curvature}. Returns -1 if the
-     * number of points of the specified stroke is not enough w.r.t. <i>k</i>.
+     * {@link Stroke stroke} which has the highest curvature - change in
+     * direction with respect to path length, of the n-th stroke point.
+     * <p>
+     * <i>k</i> is a small {@code integer} defining the neighborhood size around
+     * the n-th point. The authors of the paper set it to 2 empirically as a
+     * tradeoff between the suppression of noise and the sensitivity of vertex
+     * detection. If the specified value for k is less than
+     * {@code (int) (n / 2)} (with n the number of point in the stroke}, that
+     * threshold will be used instead of the specified value.
      * 
      * @param stroke the {@link Stroke stroke}
      * @param k a small {@code integer} defining the neighborhood size around
-     *        the n-th point
+     *        the each point of the stroke
      * @return the index of the {@link Point point} in the specified
      *         {@link Stroke stroke} which has the highest
      *         {@link #curvature(Stroke, int, int) curvature}
      */
     static final int indexOfMaxCurvature(final Stroke stroke, final int k) {
         final int strokeSize = stroke.size();
+        final int maxK = (int) Math.ceil(strokeSize / 2);
+        final int actualK = Math.min(maxK, k);
         double maxCurvature = 0;
         int result = -1;
-        for (int i = k; i < strokeSize - k; i++) {
-            final double curvature = curvature(stroke, i, k);
+        for (int i = actualK; i < strokeSize - actualK; i++) {
+            final double curvature = curvature(stroke, i, actualK);
             if (curvature > maxCurvature) {
                 maxCurvature = curvature;
                 result = i;
@@ -147,6 +125,36 @@ final class Strokes {
         return result;
     }
 
+    /**
+     * Returns the curvature - change in direction with respect to path length,
+     * of the n-th stroke point.
+     * <p>
+     * {@code k} k is a small {@code integer} defining the neighborhood size
+     * around the n-th point. The authors of the paper set it to {@code 2}
+     * empirically as a tradeoff between the suppression of noise and the
+     * sensitivity of vertex detection.
+     * 
+     * @param stroke the {@link Stroke stroke}
+     * @param n the index of the point in the stroke for which the curvature
+     *        shall be computed
+     * @param k a small {@code integer} defining the neighborhood size around
+     *        the n-th point
+     * @return the curvature of the n-th stroke point
+     */
+    private static double curvature(final Stroke stroke, final int n, final int k) {
+        double theta = 0.0;
+        final int strokeSize = stroke.size();
+        double di = direction(stroke, absoluteIndex(strokeSize, n - k));
+        for (int i = n - k; i <= n + k - 1; i++) {
+            final double di1 = direction(stroke, absoluteIndex(strokeSize, i + 1));
+            theta += shift(di1 - di);
+            di = di1;
+        }
+        theta = Math.abs(theta);
+        final double distance = distance(stroke, n - k, n + k);
+        return theta / distance;
+    }
+
     private static double direction(final Point start, final Point end) {
         final double dy = end.y() - start.y();
         final double dx = end.x() - start.x();
@@ -165,7 +173,7 @@ final class Strokes {
     }
 
     // shifts the specified angle in the range -pi to pi. Note that angle shall
-    // be in range -3pi to 3 pi
+    // be in range -3*pi to 3*pi
     private static double shift(final double angle) {
         if (angle > Math.PI) {
             return angle - TWO_PI;

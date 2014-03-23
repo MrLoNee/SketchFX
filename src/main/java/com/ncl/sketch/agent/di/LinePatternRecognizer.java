@@ -6,6 +6,9 @@ import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
 
+/**
+ * A specialized {@link PatternRecognizer} that recognizes lines.
+ */
 final class LinePatternRecognizer implements PatternRecognizer {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
