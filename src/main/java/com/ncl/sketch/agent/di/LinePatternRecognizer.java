@@ -8,22 +8,27 @@ import com.ncl.sketch.agent.api.Stroke;
 
 final class LinePatternRecognizer implements PatternRecognizer {
 
-    private static final double MIN_CORRELATION = 0.8;
-
     private static final Logger LOGGER = Logger.getLogger("DomainIndependent");
+
+    private final double minCorrelation;
 
     private final double maxAreaRatio;
 
     /**
      * Constructor.
      * 
-     * @param aMaxAreaRatio max ratio (feature area of this stroke to the
+     * @param minimumCorrelation a {@code double} in range <i>0.0</i> to
+     *        <i>1.0</i> used to assess the fit of the computed regression line.
+     *        The higher the value the more restrictive the fit will be. A value
+     *        of <i>0.7</i> is a good comprise to ensure correct recognition
+     * @param maximumAreaRatio max ratio (feature area of this stroke to the
      *        candidate line / candidate line area) above which the candidate
      *        line found by linear regression will be considered unacceptable. A
-     *        good value is {@code 1.0}
+     *        good value is <i>1.0</i>
      */
-    LinePatternRecognizer(final double aMaxAreaRatio) {
-        maxAreaRatio = aMaxAreaRatio;
+    LinePatternRecognizer(final double minimumCorrelation, final double maximumAreaRatio) {
+        minCorrelation = minimumCorrelation;
+        maxAreaRatio = maximumAreaRatio;
     }
 
     @Override
@@ -51,7 +56,7 @@ final class LinePatternRecognizer implements PatternRecognizer {
     /**
      * @see {@link http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf}
      */
-    private static boolean leastSquaresRegressionLineAcceptable(final Stroke stroke) {
+    private boolean leastSquaresRegressionLineAcceptable(final Stroke stroke) {
         final int strokeSize = stroke.size();
         final double[] x = new double[strokeSize];
         final double[] y = new double[strokeSize];
@@ -114,7 +119,7 @@ final class LinePatternRecognizer implements PatternRecognizer {
                 .append(b).append("x; sse = ").append(sse).append("; sst = ").append(sst).append("; r2 = ").append(r2);
         LOGGER.fine(msg.toString());
 
-        return Double.isNaN(r2) || r2 >= MIN_CORRELATION;
+        return Double.isNaN(r2) || r2 >= minCorrelation;
 
     }
 

@@ -3,7 +3,7 @@ package com.ncl.sketch.agent.api;
 import java.util.Collection;
 
 /**
- * Results of the sketch recognition process.
+ * Result of the sketch recognition process.
  */
 public interface RecognitionResult {
 

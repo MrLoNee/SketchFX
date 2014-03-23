@@ -16,7 +16,8 @@ public final class StrokesTest {
     public final void curvature() {
         final Stroke stroke = stroke();
         assertEquals(0.27604535, Strokes.curvature(stroke, 1, 2), 0.00001);
-        assertEquals(0.12711770, Strokes.curvature(stroke, 4, 2), 0.00001);
+        assertEquals(0.27604535, Strokes.curvature(stroke, 2, 2), 0.00001);
+        assertEquals(0.25423540, Strokes.curvature(stroke, 4, 2), 0.00001);
     }
 
     @Test
@@ -40,6 +41,12 @@ public final class StrokesTest {
         final Stroke stroke = stroke();
         final Point reference = GeometricElements.point(2.5, 2.5);
         assertEquals(25.0, Strokes.featureArea(stroke, reference), DELTA);
+    }
+
+    @Test
+    public final void indexOfMaxCurvature() {
+        final Stroke stroke = stroke();
+        assertEquals(2, Strokes.indexOfMaxCurvature(stroke, 2));
     }
 
     private static Stroke stroke() {

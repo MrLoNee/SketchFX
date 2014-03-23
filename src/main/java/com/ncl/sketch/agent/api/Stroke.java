@@ -4,8 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A part of a sketch used as an input to a recognition agent. A stroke is
- * defined by a list of {@link Point point}s.
+ * A collection of contiguous {@link Point point}s.
  */
 public final class Stroke {
 
@@ -20,8 +19,12 @@ public final class Stroke {
      * @param somePoints points defining the stroke
      */
     public Stroke(final double aWidth, final Point... somePoints) {
+        this(aWidth, Arrays.asList(somePoints));
+    }
+
+    private Stroke(final double aWidth, final List<Point> somePoints) {
         width = aWidth;
-        points = Arrays.asList(somePoints);
+        points = somePoints;
     }
 
     /**
@@ -41,6 +44,22 @@ public final class Stroke {
      */
     public final int size() {
         return points.size();
+    }
+
+    /**
+     * Returns a view of the portion of this stroke between the specified
+     * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive. If
+     * <tt>fromIndex</tt> and <tt>toIndex</tt> are equal, the returned stroke is
+     * empty.
+     * 
+     * @see List#subList(int, int)
+     * @param fromIndex
+     * @param toIndex
+     * @return
+     */
+    public final Stroke subStroke(final int fromIndex, final int toIndex) {
+        final List<Point> sub = points.subList(fromIndex, toIndex);
+        return new Stroke(width, sub);
     }
 
     /**

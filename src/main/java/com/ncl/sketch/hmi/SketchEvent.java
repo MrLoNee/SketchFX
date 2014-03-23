@@ -22,34 +22,34 @@ public class SketchEvent extends Event {
         stroke = new Stroke(1.0, points(sketchData));
     }
 
-    private static Point[] points(List<Point2D> sketchData) {
+    public final Stroke getSketchData() {
+        return stroke;
+    }
+
+    private static Point[] points(final List<Point2D> sketchData) {
         final Point[] result = new Point[sketchData.size()];
         int i = 0;
         for (final Point2D pt : sketchData) {
             result[i] = new Point() {
 
                 @Override
+                public final String toString() {
+                    return "[" + x() + ", " + y() + "]";
+                }
+
+                @Override
                 public final double x() {
                     return pt.getX();
                 }
-                
+
                 @Override
                 public final double y() {
                     return pt.getY();
-                }
-                
-                @Override
-                public final String toString() {
-                    return "[" + x() + ", " + y() + "]";
                 }
             };
             i++;
         }
         return result;
-    }
-
-    public final Stroke getSketchData() {
-        return stroke;
     }
 
 }

@@ -37,7 +37,7 @@ public final class Line {
     public final Point start() {
         return start;
     }
-    
+
     @Override
     public final String toString() {
         final StringBuilder sb = new StringBuilder("Line [from: ");

@@ -13,6 +13,14 @@ final class GeometricElements {
 
     }
 
+    static final Point point(final double x, final double y) {
+        final Point pt = mock(Point.class);
+        when(pt.x()).thenReturn(x);
+        when(pt.y()).thenReturn(y);
+        when(pt.toString()).thenReturn("[" + x + ", " + y + "]");
+        return pt;
+    }
+
     static final Stroke stroke(final double[] x, final double[] y) {
         if (x.length != y.length) {
             fail();
@@ -22,14 +30,6 @@ final class GeometricElements {
             points[i] = point(x[i], y[i]);
         }
         return new Stroke(1.0, points);
-    }
-
-    static final Point point(final double x, final double y) {
-        final Point pt = mock(Point.class);
-        when(pt.x()).thenReturn(x);
-        when(pt.y()).thenReturn(y);
-        when(pt.toString()).thenReturn("[" + x + ", " + y + "]");
-        return pt;
     }
 
 }

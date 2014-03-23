@@ -16,7 +16,12 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
      * Constructor.
      */
     public DomainIndependentAgent() {
-        lineRecognizer = new LinePatternRecognizer(1.0);
+        lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
+    }
+
+    @Override
+    public final RecognitionResult postProcess() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

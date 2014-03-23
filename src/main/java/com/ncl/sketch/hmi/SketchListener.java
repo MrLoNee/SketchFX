@@ -16,9 +16,9 @@ public class SketchListener implements EventHandler<MouseEvent> {
     private Polyline sketchDrawing;
 
     private final List<EventHandler<SketchEvent>> listeners;
-    private Group container;
+    private final Group container;
 
-    public SketchListener(Scene scene, final Group aContainer) {
+    public SketchListener(final Scene scene, final Group aContainer) {
         sketch = new ArrayList<>();
         listeners = new ArrayList<>();
 
@@ -26,10 +26,6 @@ public class SketchListener implements EventHandler<MouseEvent> {
         scene.setOnMouseDragged(this);
         scene.setOnMouseReleased(this);
         container = aContainer;
-    }
-
-    public void setOnSketchDone(final EventHandler<SketchEvent> handler) {
-        listeners.add(handler);
     }
 
     @Override
@@ -54,12 +50,16 @@ public class SketchListener implements EventHandler<MouseEvent> {
 
             final List<Point2D> notificationList = new ArrayList<>(sketch);
             sketch.clear();
-            
+
             final SketchEvent sketchEvent = new SketchEvent(notificationList);
             for (final EventHandler<SketchEvent> listener : listeners) {
                 listener.handle(sketchEvent);
             }
         }
+    }
+
+    public void setOnSketchDone(final EventHandler<SketchEvent> handler) {
+        listeners.add(handler);
     }
 
 }

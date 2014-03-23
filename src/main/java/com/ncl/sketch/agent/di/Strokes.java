@@ -16,6 +16,8 @@ import com.ncl.sketch.agent.api.Stroke;
  */
 final class Strokes {
 
+    private static final double TWO_PI = 2 * Math.PI;
+
     private Strokes() {
         // empty;
     }
@@ -39,8 +41,11 @@ final class Strokes {
     static final double curvature(final Stroke stroke, final int n, final int k) {
         double theta = 0.0;
         final int strokeSize = stroke.size();
+        double di = direction(stroke, absoluteIndex(strokeSize, n - k));
         for (int i = n - k; i <= n + k - 1; i++) {
-            theta += direction(stroke, absoluteIndex(strokeSize, i));
+            final double di1 = direction(stroke, absoluteIndex(strokeSize, i + 1));
+            theta += shift(di1 - di);
+            di = di1;
         }
         theta = Math.abs(theta);
         final double distance = distance(stroke, n - k, n + k);
@@ -106,7 +111,31 @@ final class Strokes {
         return area;
     }
 
-   
+    /**
+     * Returns the index of the {@link Point point} in the specified
+     * {@link Stroke stroke} which has the highest
+     * {@link #curvature(Stroke, int, int) curvature}.
+     * 
+     * @param stroke the {@link Stroke stroke}
+     * @param k a small {@code integer} defining the neighborhood size around
+     *        the n-th point
+     * @return the index of the {@link Point point} in the specified
+     *         {@link Stroke stroke} which has the highest
+     *         {@link #curvature(Stroke, int, int) curvature}
+     */
+    static final int indexOfMaxCurvature(final Stroke stroke, final int k) {
+        final int strokeSize = stroke.size();
+        double maxCurvature = 0;
+        int result = -1;
+        for (int i = k; i < strokeSize - k; i++) {
+            final double curvature = curvature(stroke, i, k);
+            if (curvature > maxCurvature) {
+                maxCurvature = curvature;
+                result = i;
+            }
+        }
+        return result;
+    }
 
     private static int absoluteIndex(final int strokeSize, final int relativeIndex) {
         final int result;
@@ -126,8 +155,6 @@ final class Strokes {
         return Math.atan2(dy, dx);
     }
 
- 
-
     private static double distance(final Stroke stroke, final int from, final int to) {
         double distance = 0.0;
         final int strokeSize = stroke.size();
@@ -139,5 +166,16 @@ final class Strokes {
         return distance;
     }
 
-   
+    // shifts the specified angle in the range -pi to pi. Note that angle shall
+    // be in range -3pi to 3 pi
+    private static double shift(final double angle) {
+        if (angle > Math.PI) {
+            return angle - TWO_PI;
+        } else if (angle < -Math.PI) {
+            return angle + TWO_PI;
+        } else {
+            return angle;
+        }
+    }
+
 }
