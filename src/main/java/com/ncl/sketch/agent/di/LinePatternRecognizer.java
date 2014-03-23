@@ -8,7 +8,7 @@ import com.ncl.sketch.agent.api.Stroke;
 
 final class LinePatternRecognizer implements PatternRecognizer {
 
-    private static final Logger LOGGER = Logger.getLogger("DomainIndependent");
+    private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
     private final double minCorrelation;
 
@@ -33,7 +33,7 @@ final class LinePatternRecognizer implements PatternRecognizer {
 
     @Override
     public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {
-        LOGGER.info("Processing stroke with " + stroke.size() + " points");
+        LOGGER.fine("Processing stroke with " + stroke.size() + " points");
         final boolean lsrlAcceptable = leastSquaresRegressionLineAcceptable(stroke);
         final boolean isLine;
         if (lsrlAcceptable) {
@@ -44,7 +44,7 @@ final class LinePatternRecognizer implements PatternRecognizer {
             isLine = areaRatio < maxAreaRatio;
             LOGGER.fine("Feature area: " + featureArea + "; Line area: " + lineArea + "; ratio: " + areaRatio);
             if (isLine) {
-                LOGGER.info("Recognized line: " + candidate);
+                LOGGER.info("Recognized line: " + candidate + " from stroke with " + stroke.size() + " points");
                 result.add(candidate);
             }
         } else {

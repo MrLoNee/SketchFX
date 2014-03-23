@@ -111,7 +111,8 @@ final class Strokes {
     /**
      * Returns the index of the {@link Point point} in the specified
      * {@link Stroke stroke} which has the highest
-     * {@link #curvature(Stroke, int, int) curvature}.
+     * {@link #curvature(Stroke, int, int) curvature}. Returns -1 if the
+     * number of points of the specified stroke is not enough w.r.t. <i>k</i>.
      * 
      * @param stroke the {@link Stroke stroke}
      * @param k a small {@code integer} defining the neighborhood size around

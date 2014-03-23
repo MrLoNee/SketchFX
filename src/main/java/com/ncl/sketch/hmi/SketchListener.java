@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 
 final class SketchListener implements EventHandler<MouseEvent> {
@@ -35,6 +36,7 @@ final class SketchListener implements EventHandler<MouseEvent> {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             // initialize the sketch
             sketchDrawing = new Polyline();
+            sketchDrawing.setStroke(Color.LIGHTGREY);
             container.getChildren().add(sketchDrawing);
             final Point2D point = new Point2D(event.getX(), event.getY());
             sketch.add(point);

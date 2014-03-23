@@ -48,6 +48,14 @@ public final class StrokesTest {
         final Stroke stroke = stroke();
         assertEquals(2, Strokes.indexOfMaxCurvature(stroke, 2));
     }
+    
+    @Test
+    public final void indexOfMaxCurvature3Points() {
+        final double[] x = { 0, 0, 2.5 };
+        final double[] y = { 0, 5, 7.5 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        assertEquals(-1, Strokes.indexOfMaxCurvature(stroke, 2));
+    }
 
     private static Stroke stroke() {
         final double[] x = { 0, 0, 2.5, 5, 5 };

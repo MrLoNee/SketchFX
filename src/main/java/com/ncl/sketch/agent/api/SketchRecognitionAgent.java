@@ -13,6 +13,13 @@ public interface SketchRecognitionAgent {
 
     RecognitionResult postProcess();
 
+    /**
+     * Tries and recognizes geometric patterns in the specified {@link Stroke
+     * stroke}.
+     * 
+     * @param stroke the stroke on which to perform the recognition process
+     * @return the {@link RecognitionResult result} of the recognition process
+     */
     RecognitionResult recognize(final Stroke stroke);
 
 }

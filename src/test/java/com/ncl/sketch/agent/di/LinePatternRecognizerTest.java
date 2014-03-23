@@ -59,6 +59,24 @@ public final class LinePatternRecognizerTest {
         assertEquals(first, line.start());
         assertEquals(last, line.end());
     }
+    
+    @Test
+    public final void recognizesLine2Points() {
+        final LinePatternRecognizer recognizer = new LinePatternRecognizer(0.7, 1.0);
+
+        final double[] x = { 154, -36 };
+        final double[] y = { 1000, 541 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final Point first = stroke.get(0);
+        final Point last = stroke.get(1);
+        final StrokeRecognitionResult result = new StrokeRecognitionResult();
+
+        assertTrue(recognizer.recognize(stroke, result));
+        assertEquals(1, result.lines().size());
+        final Line line = result.lines().get(0);
+        assertEquals(first, line.start());
+        assertEquals(last, line.end());
+    }
 
     @Test
     public final void recognizesHorizontal() {
