@@ -1,7 +1,5 @@
 package com.ncl.sketch.agent.di;
 
-import javax.media.j3d.Link;
-
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
@@ -9,9 +7,8 @@ import com.ncl.sketch.agent.api.Stroke;
 /**
  * Helper functions pertaining to geometric calculations on {@link Stroke
  * stroke}s.
- * 
- * @see {@link Link
- *      http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800
+ *
+ * @see {@link http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800
  *      &rep=rep1&type=pdf}
  */
 final class Strokes {
@@ -30,7 +27,7 @@ final class Strokes {
      * around the n-th point. The authors of the paper set it to {@code 2}
      * empirically as a tradeoff between the suppression of noise and the
      * sensitivity of vertex detection.
-     * 
+     *
      * @param stroke the {@link Stroke stroke}
      * @param n the index of the point in the stroke for which the curvature
      *        shall be computed
@@ -55,7 +52,7 @@ final class Strokes {
     /**
      * Returns the direction of the n-th stroke point. The result is an angle in
      * <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>.
-     * 
+     *
      * @param stroke the {@link Stroke stroke}
      * @param n the index of the point in the stroke for which the direction
      *        shall be computed
@@ -71,7 +68,7 @@ final class Strokes {
      * {@link Line line} which is computed as the sum area of all the small
      * quadrangles formed by two consecutive stroke points and their foot points
      * on the line.
-     * 
+     *
      * @param stroke the {@link Stroke stroke}
      * @param line the reference {@link Line line}
      * @return the feature area of the specified stroke to the specified
@@ -95,7 +92,7 @@ final class Strokes {
      * reference {@link Point point} which is equal to the sum area of all the
      * small triangles formed by two consecutive stroke points and that
      * reference {@link Point point}.
-     * 
+     *
      * @param stroke the {@link Stroke stroke}
      * @param point the reference {@link Point point}
      * @return the feature area of the specified stroke against the specified
@@ -115,7 +112,7 @@ final class Strokes {
      * Returns the index of the {@link Point point} in the specified
      * {@link Stroke stroke} which has the highest
      * {@link #curvature(Stroke, int, int) curvature}.
-     * 
+     *
      * @param stroke the {@link Stroke stroke}
      * @param k a small {@code integer} defining the neighborhood size around
      *        the n-th point
