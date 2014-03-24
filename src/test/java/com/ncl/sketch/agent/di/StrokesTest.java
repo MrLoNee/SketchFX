@@ -16,7 +16,7 @@ public final class StrokesTest {
     public final void direction() {
         final Stroke stroke = stroke();
         assertEquals(0.785398163, Strokes.direction(stroke, 1), 0.00001);
-        assertEquals(Math.PI, Strokes.direction(stroke, 4), DELTA);
+        assertEquals(-Math.PI / 2, Strokes.direction(stroke, 3), DELTA);
     }
 
     @Test
@@ -40,7 +40,7 @@ public final class StrokesTest {
         final Stroke stroke = stroke();
         assertEquals(2, Strokes.indexOfMaxCurvature(stroke, 2));
     }
-    
+
     @Test
     public final void indexOfMaxCurvature3Points() {
         final double[] x = { 0, 0, 2.5 };

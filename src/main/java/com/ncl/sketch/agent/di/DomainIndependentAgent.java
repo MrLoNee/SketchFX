@@ -7,15 +7,15 @@ import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A domain-independent {@link SketchRecognitionAgent}. This agent makes no
- * assumption about the context in which the sketch was drawn.
+ * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the
+ * context in which the sketch was drawn.
  */
 public final class DomainIndependentAgent implements SketchRecognitionAgent {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
     private final PatternRecognizer lineRecognizer;
-    
+
     private final int k;
 
     /**
@@ -37,7 +37,7 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
         final boolean recognized = lineRecognizer.recognize(stroke, result);
         if (!recognized) {
             recognize(stroke, result);
-        }        
+        }
         return result;
     }
 
@@ -45,34 +45,34 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
         final int strokeSize = stroke.size();
         LOGGER.info("Entering recursive recognition phase for stroke with " + strokeSize + " points");
         if (strokeSize > 1) {
-            
+
             final int index = Strokes.indexOfMaxCurvature(stroke, k);
             if (index > 0 && index < strokeSize - 1) {
-                
+
                 LOGGER.info("Splitting index = " + index);
-                
+
                 /*
                  * split the stroke
                  */
-                
+
                 final Stroke first = stroke.subStroke(0, index + 1);
                 final Stroke second = stroke.subStroke(index, strokeSize);
-                
+
                 /*
                  * Apply recognition to both sub strokes.
                  */
-                
+
                 final boolean firstRecognized = lineRecognizer.recognize(first, result);
                 final boolean secondRecognized = lineRecognizer.recognize(second, result);
-                
+
                 /*
                  * Recurse if needed.
                  */
-                
+
                 if (!firstRecognized) {
                     recognize(first, result);
                 }
-                
+
                 if (!secondRecognized) {
                     recognize(second, result);
                 }
