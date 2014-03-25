@@ -1,6 +1,7 @@
 package com.ncl.sketch.agent.di;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -29,13 +30,12 @@ public final class DomainIndependentAgentTest {
         final double[] x = { 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 };
         final double[] y = { 115, 117, 120, 123, 126, 129, 132, 135, 139, 142, 146, 150, 164, 169, 174 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final Point first1 = stroke.get(12);
-        final Point last1 = stroke.get(14);
-        final Point first2 = stroke.get(0);
-        final Point last2 = stroke.get(10);
-        final Point first3 = stroke.get(10);
-        final Point last3 = stroke.get(12);
-
+        final Point first1 = stroke.get(0);
+        final Point last1 = stroke.get(2);
+        final Point first2 = stroke.get(2);
+        final Point last2 = stroke.get(9);
+        final Point first3 = stroke.get(9);
+        final Point last3 = stroke.get(14);
 
         final DomainIndependentAgent agent = new DomainIndependentAgent();
         final RecognitionResult result = agent.recognize(stroke);
