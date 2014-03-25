@@ -20,19 +20,23 @@ final class CirclePatternRecognizer implements PatternRecognizer {
 
     private final double maxAreaRatio;
 
+    private final double maxSlopeError;
+
     /**
      * Constructor.
      * 
-     * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess the fit of the
-     *            computed regression line derived from the direction graph of the stroke. The higher the value the
-     *            more restrictive the fit will be
-     * @param maximumAreaRatio max ratio (feature area of this stroke to the candidate circle / candidate circle
-     *            area) above which the candidate circle will be considered unacceptable. A good value is
-     *            <i>1.0</i>
+     * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess
+     *            the fit of the computed regression line derived from the direction graph of the
+     *            stroke. The higher the value the more restrictive the fit will be
+     * @param maximumAreaRatio max ratio (feature area of this stroke to the candidate circle /
+     *            candidate circle area) above which the candidate circle will be considered
+     *            unacceptable. A good value is <i>1.0</i>
      */
-    CirclePatternRecognizer(final double minimumCorrelation, final double maximumAreaRatio) {
+    CirclePatternRecognizer(final double minimumCorrelation, final double maximumAreaRatio,
+            final double maximumSlopeError) {
         minCorrelation = minimumCorrelation;
         maxAreaRatio = maximumAreaRatio;
+        maxSlopeError = maximumSlopeError;
         ls = new LeastSquares();
     }
 
@@ -47,12 +51,7 @@ final class CirclePatternRecognizer implements PatternRecognizer {
             final double candidateArea = Geometry2D.areaOf(candidate);
             final double areaRatio = featureArea / candidateArea;
             isCircle = areaRatio < maxAreaRatio;
-            LOGGER.fine("Feature area: "
-                + featureArea
-                + "; Candidate area: "
-                + candidateArea
-                + "; ratio: "
-                + areaRatio);
+            LOGGER.fine("Feature area: " + featureArea + "; Candidate area: " + candidateArea + "; ratio: " + areaRatio);
             if (isCircle) {
                 LOGGER.info("Recognized circle: " + candidate + " from stroke with " + stroke.size() + " points");
                 result.add(candidate);
@@ -73,6 +72,6 @@ final class CirclePatternRecognizer implements PatternRecognizer {
         final RegressionLine rl = ls.regressionLine(x, directionGraph);
         final double perfectSlope = TWO_PI / strokeSize;
         final double slopeError = Math.abs(rl.slope() - perfectSlope) / perfectSlope;
-        return rl.coefficientOfDetermination() >= minCorrelation && slopeError < 0.3;
+        return rl.coefficientOfDetermination() >= minCorrelation && slopeError < maxSlopeError;
     }
 }

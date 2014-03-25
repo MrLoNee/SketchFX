@@ -7,8 +7,8 @@ import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the context in which
- * the sketch was drawn.
+ * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the
+ * context in which the sketch was drawn.
  */
 public final class DomainIndependentAgent implements SketchRecognitionAgent {
 
@@ -23,7 +23,7 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
      */
     public DomainIndependentAgent() {
         recgonizers = new PatternRecognizerChain();
-        recgonizers.add(new LinePatternRecognizer(0.7, 1.0)).add(new CirclePatternRecognizer(0.7, 1.0));
+        recgonizers.add(new LinePatternRecognizer(0.7, 1.0)).add(new CirclePatternRecognizer(0.7, 1.0, 0.2));
         k = 2;
     }
 
@@ -35,46 +35,30 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
     @Override
     public final RecognitionResult recognize(final Stroke stroke) {
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
-        final boolean recognized = recgonizers.recognize(stroke, result);
-        if (!recognized) {
-            recognize(stroke, result);
-        }
+        recognize(stroke, result);
         return result;
     }
 
     private void recognize(final Stroke stroke, final StrokeRecognitionResult result) {
-        final int strokeSize = stroke.size();
-        LOGGER.info("Entering recursive recognition phase for stroke with " + strokeSize + " points");
-        if (strokeSize > 1) {
+        final boolean recognized = recgonizers.recognize(stroke, result);
+        if (!recognized) {
 
-            final int index = Strokes.indexOfMaxCurvature(stroke, k);
-            if (index > 0 && index < strokeSize - 1) {
+            final int strokeSize = stroke.size();
+            LOGGER.info("Entering recursive recognition phase for stroke with " + strokeSize + " points");
+            if (strokeSize > 1) {
+                final int index = Strokes.indexOfMaxCurvature(stroke, k);
+                if (index > 0 && index < strokeSize - 1) {
+                    LOGGER.info("Splitting index = " + index);
+                    /*
+                     * split the stroke
+                     */
+                    final Stroke first = stroke.subStroke(0, index + 1);
+                    final Stroke second = stroke.subStroke(index, strokeSize);
 
-                LOGGER.info("Splitting index = " + index);
-
-                /*
-                 * split the stroke
-                 */
-
-                final Stroke first = stroke.subStroke(0, index + 1);
-                final Stroke second = stroke.subStroke(index, strokeSize);
-
-                /*
-                 * Apply recognition to both sub strokes.
-                 */
-
-                final boolean firstRecognized = recgonizers.recognize(first, result);
-                final boolean secondRecognized = recgonizers.recognize(second, result);
-
-                /*
-                 * Recurse if needed.
-                 */
-
-                if (!firstRecognized) {
+                    /*
+                     * Apply recognition to both sub strokes.
+                     */
                     recognize(first, result);
-                }
-
-                if (!secondRecognized) {
                     recognize(second, result);
                 }
             }
