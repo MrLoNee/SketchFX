@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.SketchRecognitionAgent;
@@ -45,6 +46,7 @@ public class SketchRecognitionHMI extends Application {
                                 .getSketchData());
 
                         final Collection<Line> lines = recognitionResult.lines();
+                        final Collection<Circle> circles = recognitionResult.circles();
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
@@ -54,6 +56,15 @@ public class SketchRecognitionHMI extends Application {
                                     lineFx.setStroke(Color.GREEN);
                                     container.getChildren().add(lineFx);
                                 }
+
+                                for (final Circle circle : circles) {
+                                    final javafx.scene.shape.Circle circleFx = new javafx.scene.shape.Circle(circle
+                                            .center().x(), circle.center().y(), circle.radius());
+                                    circleFx.setFill(Color.TRANSPARENT);
+                                    circleFx.setStroke(Color.GREEN);
+                                    container.getChildren().add(circleFx);
+                                }
+
                             }
                         });
                     }

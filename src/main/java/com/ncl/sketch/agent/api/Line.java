@@ -40,12 +40,7 @@ public final class Line {
 
     @Override
     public final String toString() {
-        final StringBuilder sb = new StringBuilder("Line [from: ");
-        sb.append(start);
-        sb.append("; to: ");
-        sb.append(end);
-        sb.append("]");
-        return sb.toString();
+        return "Line [start=" + start + ", end=" + end + "]";
     }
 
 }

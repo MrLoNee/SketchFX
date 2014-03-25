@@ -7,14 +7,14 @@ import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the
- * context in which the sketch was drawn.
+ * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the context in which
+ * the sketch was drawn.
  */
 public final class DomainIndependentAgent implements SketchRecognitionAgent {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
-    private final PatternRecognizer lineRecognizer;
+    private final PatternRecognizerChain recgonizers;
 
     private final int k;
 
@@ -22,7 +22,8 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
      * Constructor.
      */
     public DomainIndependentAgent() {
-        lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
+        recgonizers = new PatternRecognizerChain();
+        recgonizers.add(new LinePatternRecognizer(0.7, 1.0)).add(new CirclePatternRecognizer(0.7, 1.0));
         k = 2;
     }
 
@@ -34,7 +35,7 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
     @Override
     public final RecognitionResult recognize(final Stroke stroke) {
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
-        final boolean recognized = lineRecognizer.recognize(stroke, result);
+        final boolean recognized = recgonizers.recognize(stroke, result);
         if (!recognized) {
             recognize(stroke, result);
         }
@@ -62,8 +63,8 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent {
                  * Apply recognition to both sub strokes.
                  */
 
-                final boolean firstRecognized = lineRecognizer.recognize(first, result);
-                final boolean secondRecognized = lineRecognizer.recognize(second, result);
+                final boolean firstRecognized = recgonizers.recognize(first, result);
+                final boolean secondRecognized = recgonizers.recognize(second, result);
 
                 /*
                  * Recurse if needed.

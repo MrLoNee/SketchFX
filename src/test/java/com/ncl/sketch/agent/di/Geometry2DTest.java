@@ -4,12 +4,31 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
+import com.ncl.sketch.agent.api.Stroke;
 
 public final class Geometry2DTest {
 
     private static final double DELTA = 0.00001;
+
+    @Test
+    public final void circle() {
+        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final Circle circle = Geometry2D.circle(stroke);
+        assertEquals(101.5, circle.center().x(), DELTA);
+        assertEquals(101.5, circle.center().y(), DELTA);
+        assertEquals(1.581138, circle.radius(), DELTA);
+    }
+
+    @Test
+    public final void circleArea() {
+        final Circle circle = new Circle(null, 154.0);
+        assertEquals(74506.01137, Geometry2D.areaOf(circle), DELTA);
+    }
 
     @Test
     public final void distance() {
@@ -19,11 +38,11 @@ public final class Geometry2DTest {
     }
 
     @Test
-    public final void length() {
+    public final void lengthOf() {
         final Point start = GeometricElements.point(5.6, -18.9);
         final Point end = GeometricElements.point(154, 89.45);
         final Line line = new Line(start, end);
-        assertEquals(183.74515639, Geometry2D.length(line), DELTA);
+        assertEquals(183.74515639, Geometry2D.lengthOf(line), DELTA);
     }
 
     @Test

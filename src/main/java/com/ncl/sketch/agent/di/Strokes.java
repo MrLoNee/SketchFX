@@ -7,7 +7,7 @@ import com.ncl.sketch.agent.api.Stroke;
 /**
  * Helper functions pertaining to geometric calculations on {@link Stroke stroke}s.
  * 
- * @see {@link http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800 &rep=rep1&type=pdf}
+ * @see {@link http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&rep=rep1&type=pdf}
  */
 final class Strokes {
 
@@ -18,18 +18,17 @@ final class Strokes {
     }
 
     /**
-     * Returns the direction graph of the specified stroke. The result is an array containing the
-     * direction of each of the points of the stroke - expect for the last one obviously. The
-     * direction is an angle in <strong>radians</strong>.
+     * Returns the direction graph of the specified stroke. The result is an array containing the direction of each
+     * of the points of the stroke - expect for the last one obviously. The direction is an angle in
+     * <strong>radians</strong>.
      * <p>
-     * Note that the direction angle values are shifted in order to make the data distribute
-     * continuously on the direction axis.
+     * Note that the direction angle values are shifted in order to make the data distribute continuously on the
+     * direction axis.
      * 
      * @param stroke the {@link Stroke stroke}
-     * @return an array containing <code>{@link Stroke#size()} - 1</code> angles in
-     *         <strong>radians</strong>
+     * @return an array containing <code>{@link Stroke#size()} - 1</code> angles in <strong>radians</strong>
      */
-    static final double[] direction(final Stroke stroke) {
+    static final double[] directionGraph(final Stroke stroke) {
         final int strokeSize = stroke.size();
         final double[] result = new double[strokeSize - 1];
         int shift = 0;
@@ -47,22 +46,9 @@ final class Strokes {
     }
 
     /**
-     * Returns the direction of the n-th stroke point. The result is an angle in
-     * <strong>radians</strong> in the range of -<i>pi</i> to <i>pi</i>.
-     * 
-     * @param stroke the {@link Stroke stroke}
-     * @param n the index of the point in the stroke for which the direction shall be computed
-     * @return the direction of the n-th stroke point in <strong>radians</strong> in the range of
-     *         -<i>pi</i> to <i>pi</i>
-     */
-    static final double direction(final Stroke stroke, final int n) {
-        return direction(stroke.get(n), stroke.get(n + 1));
-    }
-
-    /**
-     * Returns the feature area of the specified stroke to the specified {@link Line line} which is
-     * computed as the sum area of all the small quadrangles formed by two consecutive stroke points
-     * and their foot points on the line.
+     * Returns the feature area of the specified stroke to the specified {@link Line line} which is computed as the
+     * sum area of all the small quadrangles formed by two consecutive stroke points and their foot points on the
+     * line.
      * 
      * @param stroke the {@link Stroke stroke}
      * @param line the reference {@link Line line}
@@ -82,14 +68,13 @@ final class Strokes {
     }
 
     /**
-     * Returns the feature area of the specified stroke against the specified reference
-     * {@link Point point} which is equal to the sum area of all the small triangles formed by two
-     * consecutive stroke points and that reference {@link Point point}.
+     * Returns the feature area of the specified stroke against the specified reference {@link Point point} which
+     * is equal to the sum area of all the small triangles formed by two consecutive stroke points and that
+     * reference {@link Point point}.
      * 
      * @param stroke the {@link Stroke stroke}
      * @param point the reference {@link Point point}
-     * @return the feature area of the specified stroke against the specified reference
-     *         {@link Point point}
+     * @return the feature area of the specified stroke against the specified reference {@link Point point}
      */
     static final double featureArea(final Stroke stroke, final Point point) {
         final int strokeSize = stroke.size();
@@ -102,20 +87,17 @@ final class Strokes {
     }
 
     /**
-     * Returns the index of the {@link Point point} in the specified {@link Stroke stroke} which has
-     * the highest curvature - change in direction with respect to path length, of the n-th stroke
-     * point.
+     * Returns the index of the {@link Point point} in the specified {@link Stroke stroke} which has the highest
+     * curvature - change in direction with respect to path length, of the n-th stroke point.
      * <p>
-     * <i>k</i> is a small {@code integer} defining the neighborhood size around the n-th point. The
-     * authors of the paper set it to 2 empirically as a tradeoff between the suppression of noise
-     * and the sensitivity of vertex detection. This value may be decreased if the stroke does not
-     * contain enough points.
+     * <i>k</i> is a small {@code integer} defining the neighborhood size around the n-th point. The authors of the
+     * paper set it to 2 empirically as a tradeoff between the suppression of noise and the sensitivity of vertex
+     * detection. This value may be decreased if the stroke does not contain enough points.
      * 
      * @param stroke the {@link Stroke stroke}
-     * @param k a small {@code integer} defining the neighborhood size around the each point of the
-     *            stroke
-     * @return the index of the {@link Point point} in the specified {@link Stroke stroke} which has
-     *         the highest {@link #curvature(Stroke, int, int) curvature}
+     * @param k a small {@code integer} defining the neighborhood size around the each point of the stroke
+     * @return the index of the {@link Point point} in the specified {@link Stroke stroke} which has the highest
+     *         {@link #curvature(Stroke, int, int) curvature}
      */
     static final int indexOfMaxCurvature(final Stroke stroke, final int k) {
         final int strokeSize = stroke.size();
@@ -139,12 +121,11 @@ final class Strokes {
     }
 
     /**
-     * Returns the curvature - change in direction with respect to path length, of the n-th stroke
-     * point.
+     * Returns the curvature - change in direction with respect to path length, of the n-th stroke point.
      * <p>
-     * {@code k} k is a small {@code integer} defining the neighborhood size around the n-th point.
-     * The authors of the paper set it to {@code 2} empirically as a tradeoff between the
-     * suppression of noise and the sensitivity of vertex detection.
+     * {@code k} k is a small {@code integer} defining the neighborhood size around the n-th point. The authors of
+     * the paper set it to {@code 2} empirically as a tradeoff between the suppression of noise and the sensitivity
+     * of vertex detection.
      * 
      * @param stroke the {@link Stroke stroke}
      * @param n the index of the point in the stroke for which the curvature shall be computed
@@ -168,6 +149,19 @@ final class Strokes {
         final double dy = end.y() - start.y();
         final double dx = end.x() - start.x();
         return Math.atan2(dy, dx);
+    }
+
+    /**
+     * Returns the direction of the n-th stroke point. The result is an angle in <strong>radians</strong> in the
+     * range of -<i>pi</i> to <i>pi</i>.
+     * 
+     * @param stroke the {@link Stroke stroke}
+     * @param n the index of the point in the stroke for which the direction shall be computed
+     * @return the direction of the n-th stroke point in <strong>radians</strong> in the range of -<i>pi</i> to
+     *         <i>pi</i>
+     */
+    private static double direction(final Stroke stroke, final int n) {
+        return direction(stroke.get(n), stroke.get(n + 1));
     }
 
     private static double distance(final Stroke stroke, final int from, final int to) {

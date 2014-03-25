@@ -1,11 +1,12 @@
 package com.ncl.sketch.agent.di;
 
+import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
+import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * Helper functions pertaining to geometric calculations on {@link Point 2D
- * point}s.
+ * Helper functions pertaining to geometric calculations on {@link Point 2D point}s.
  */
 final class Geometry2D {
 
@@ -13,6 +14,17 @@ final class Geometry2D {
 
     private Geometry2D() {
         // empty;
+    }
+
+    /**
+     * Returns the area of the specified {@link Circle circle}.
+     * 
+     * @param circle the {@link Circle circle} for which to compute the area
+     * @return the area of the specified {@link Circle circle}
+     */
+    static final double areaOf(final Circle circle) {
+        final double radius = circle.radius();
+        return Math.PI * radius * radius;
     }
 
     /**
@@ -28,23 +40,21 @@ final class Geometry2D {
     }
 
     /**
-     * Returns the area of the quadrilateral defined by the four specified
-     * vertices.
+     * Returns the area of the quadrilateral defined by the four specified vertices.
      * 
      * @param a first vertex
      * @param b second vertex
      * @param c third vertex
      * @param d fourth vertex
-     * @return the area of the quadrilateral defined by the four specified
-     *         vertices
+     * @return the area of the quadrilateral defined by the four specified vertices
      */
     static final double areaOf(final Point a, final Point b, final Point c, final Point d) {
         final double area;
         final double[] intersection = intersection(a, d, c, b);
         if (intersection == null) {
             /*
-             * Simple quadrilateral. Add the two areas. If quadrilateral is
-             * concave this will also work.
+             * Simple quadrilateral. Add the two areas. If quadrilateral is concave this will also
+             * work.
              */
             final double a1 = signedAreaOf(a, b, c);
             final double a2 = signedAreaOf(c, d, a);
@@ -54,12 +64,48 @@ final class Geometry2D {
         } else {
             final Point i = point(intersection[0], intersection[1]);
             /*
-             * area is the sum of the area of the two triangle intersecting at
-             * i.
+             * area is the sum of the area of the two triangle intersecting at i.
              */
             area = areaOf(a, b, i) + areaOf(i, d, c);
         }
         return area;
+    }
+
+    /**
+     * Returns a new {@link Circle circle} which takes the center of the stroke�s bounding box as
+     * its own center and the mean distance between the center and each stroke point as its radius.
+     * 
+     * @param stroke the {@link Stroke stroke}
+     * @return a new {@link Circle circle} which takes the center of the stroke�s bounding box as
+     *         its own center and the mean distance between the center and each stroke point as its
+     *         radius
+     */
+    static final Circle circle(final Stroke stroke) {
+        double maxX = Double.MIN_VALUE;
+        double minX = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE;
+
+        final int size = stroke.size();
+        for (int i = 0; i < size; i++) {
+            final Point point = stroke.get(i);
+            maxX = Math.max(point.x(), maxX);
+            minX = Math.min(point.x(), minX);
+            maxY = Math.max(point.y(), maxY);
+            minY = Math.min(point.y(), minY);
+        }
+
+        final double x = (maxX - minX) / 2 + minX;
+        final double y = (maxY - minY) / 2 + minY;
+        final Point centre = point(x, y);
+
+        double radius = 0.0;
+        for (int i = 0; i < size; i++) {
+            radius += distance(centre, stroke.get(i));
+        }
+        radius = radius / size;
+
+        return new Circle(centre, radius);
     }
 
     /**
@@ -81,18 +127,17 @@ final class Geometry2D {
      * @param line the line
      * @return the length of the specified {@link Line line}
      */
-    static final double length(final Line line) {
+    static final double lengthOf(final Line line) {
         return distance(line.start(), line.end());
     }
 
     /**
-     * Orthogonaly projects the specified {@link Point point} on the specified
-     * {@link Line line}.
+     * Orthogonally projects the specified {@link Point point} on the specified {@link Line line}.
      * 
      * @param point the point to projected
-     * @param line the line on which the point shall be orthogonaly projected
-     * @return a new {@link Point point} that is the result of the orthogonal
-     *         projection of the specified point on the specified line
+     * @param line the line on which the point shall be orthogonally projected
+     * @return a new {@link Point point} that is the result of the orthogonal projection of the
+     *         specified point on the specified line
      */
     static final Point project(final Point point, final Line line) {
         final Point start = line.start();
@@ -124,8 +169,8 @@ final class Geometry2D {
     }
 
     /*
-     * returns [x,y] if such an intersection exists, [] if the two lines are
-     * collinear, null otherwise.
+     * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null
+     * otherwise.
      */
     private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
         final double[] p = vector(a);
