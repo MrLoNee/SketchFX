@@ -8,13 +8,16 @@ import com.ncl.sketch.agent.api.Stroke;
 /**
  * Implementation of the least-squares method.
  * <p>
- * The method of least squares is a standard approach to the approximate solution of overdetermined systems, i.e.,
- * sets of equations in which there are more equations than unknowns. "Least squares" means that the overall
- * solution minimizes the sum of the squares of the errors made in the results of every single equation.
+ * The method of least squares is a standard approach to the approximate solution of overdetermined
+ * systems, i.e., sets of equations in which there are more equations than unknowns. "Least squares"
+ * means that the overall solution minimizes the sum of the squares of the errors made in the
+ * results of every single equation.
  * 
- * @see {@link http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf}
- * @see {@link http://en.wikipedia.org/wiki/Least_squares}
- * @see {@link http://en.wikipedia.org/wiki/Coefficient_of_determination}
+ * @see <a href="http://www.stat.purdue.edu/~xuanyaoh/stat350/xyApr6Lec26.pdf">lecture on least
+ *      squares</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Least_squares">wikipedia: least squares</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Coefficient_of_determination">wikipedia: coefficient
+ *      of determination</a>
  */
 final class LeastSquares {
 

@@ -150,12 +150,6 @@ final class Geometry2D {
         return point(x, y);
     }
 
-    static final double signedAreaOf(final Point a, final Point b, final Point c) {
-        final double[] v1 = vector(a, b);
-        final double[] v2 = vector(a, c);
-        return 0.5 * exteriorProductOf(v1, v2);
-    }
-
     private static double[] add(final double[] v1, final double[] v2) {
         return new double[] { x(v1) + x(v2), y(v1) + y(v2) };
     }
@@ -226,6 +220,12 @@ final class Geometry2D {
 
     private static double[] scale(final double scale, final double[] v) {
         return new double[] { scale * x(v), scale * y(v) };
+    }
+
+    private static double signedAreaOf(final Point a, final Point b, final Point c) {
+        final double[] v1 = vector(a, b);
+        final double[] v2 = vector(a, c);
+        return 0.5 * exteriorProductOf(v1, v2);
     }
 
     private static double[] subtract(final double[] v1, final double[] v2) {

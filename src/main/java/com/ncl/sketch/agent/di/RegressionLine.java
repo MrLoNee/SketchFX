@@ -1,8 +1,8 @@
 package com.ncl.sketch.agent.di;
 
 /**
- * A line defined as <i>y = a + b * x</i>. The parameters <i>a</i> and <i>b</i> parameters are the result of a
- * regression analysis.
+ * A line defined as <i>y = a + b * x</i>. The parameters <i>a</i> and <i>b</i> parameters are the
+ * result of a regression analysis.
  */
 final class RegressionLine {
 
@@ -17,8 +17,8 @@ final class RegressionLine {
      * 
      * @param aYIntercept the y-intercept of this line
      * @param aSlope the slope of this line
-     * @param the coefficient of determination of the regression line. This is a {@code double} in the range
-     *            <i>0</i> to <i>1</i>
+     * @param coefficientOfDetermination the coefficient of determination of the regression line.
+     *            This is a {@code double} in the range <i>0</i> to <i>1</i>
      */
     RegressionLine(final double aYIntercept, final double aSlope, final double coefficientOfDetermination) {
         yIntercept = aYIntercept;
@@ -32,11 +32,12 @@ final class RegressionLine {
     }
 
     /**
-     * Returns the coefficient of determination of the regression line. This is a {@code double} in the range
-     * <i>0</i> to <i>1</i>. The closer it is to <i>1</i> the best this line fits the actual data.
+     * Returns the coefficient of determination of the regression line. This is a {@code double} in
+     * the range <i>0</i> to <i>1</i>. The closer it is to <i>1</i> the best this line fits the
+     * actual data.
      * 
-     * @return the coefficient of determination of the regression line. This is a {@code double} in the range
-     *         <i>0</i> to <i>1</i>
+     * @return the coefficient of determination of the regression line. This is a {@code double} in
+     *         the range <i>0</i> to <i>1</i>
      */
     final double coefficientOfDetermination() {
         return r2;
