@@ -13,10 +13,8 @@ import javafx.scene.shape.Polyline;
 
 /**
  * The Sketch Listener is responsible to listen user mouse input on the JavaFX
- * graphical window in order to :
- * <li>Draw the user sketch
- * <li>Build the list of points of the Sketch
- * <li>Notify the {@link SketchEvent} when a sketch is done
+ * graphical window in order to : <li>Draw the user sketch <li>Build the list of
+ * points of the Sketch <li>Notify the {@link SketchEvent} when a sketch is done
  */
 final class SketchListener implements EventHandler<MouseEvent> {
 
@@ -45,19 +43,23 @@ final class SketchListener implements EventHandler<MouseEvent> {
 	    sketchDrawing = new Polyline();
 	    sketchDrawing.setStroke(Color.BLACK);
 	    container.getChildren().add(sketchDrawing);
-	    final Point2D point = new Point2D(event.getX(), event.getY());
+
+	    final Point2D point = container.parentToLocal(event.getX(),
+		    event.getY());
 	    sketch.add(point);
-	    sketchDrawing.getPoints().addAll(event.getX(), event.getY());
+	    sketchDrawing.getPoints().addAll(point.getX(), point.getY());
 	} else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
 	    // update the sketch
-	    final Point2D point = new Point2D(event.getX(), event.getY());
+	    final Point2D point = container.parentToLocal(event.getX(),
+		    event.getY());
 	    sketch.add(point);
-	    sketchDrawing.getPoints().addAll(event.getX(), event.getY());
+	    sketchDrawing.getPoints().addAll(point.getX(), point.getY());
 	} else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
 	    // finalize the sketch and throw a sketch event
-	    final Point2D point = new Point2D(event.getX(), event.getY());
+	    final Point2D point = container.parentToLocal(event.getX(),
+		    event.getY());
 	    sketch.add(point);
-	    sketchDrawing.getPoints().addAll(event.getX(), event.getY());
+	    sketchDrawing.getPoints().addAll(point.getX(), point.getY());
 
 	    final List<Point2D> notificationList = new ArrayList<>(sketch);
 	    sketch.clear();
