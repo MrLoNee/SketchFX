@@ -14,6 +14,8 @@ final class Strokes {
 
     private static final double TWO_PI = 2.0 * Math.PI;
 
+    private static final double DISCONTINUITY = Math.PI;
+
     private Strokes() {
         // empty;
     }
@@ -37,9 +39,12 @@ final class Strokes {
         for (int i = 0; i < strokeSize - 1; i++) {
             final double direction = direction(stroke, i);
             if (i > 0) {
-                if (direction < 0 && previousDirection > 0 && (previousDirection - direction) > Math.PI) {
+                /* increase/decrease shift on sign change AND discontinuity. */
+                if (direction < 0 && previousDirection > 0 && (previousDirection - direction) > DISCONTINUITY) {
                     shift++;
-                } else if (direction > 0 && previousDirection < 0 && (direction - previousDirection) > Math.PI) {
+                } else if (direction > 0
+                    && previousDirection < 0
+                    && (direction - previousDirection) > DISCONTINUITY) {
                     shift--;
                 }
             }
