@@ -5,51 +5,57 @@ import java.util.List;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Polyline;
 
-import com.ncl.sketch.agent.api.Point;
-import com.ncl.sketch.agent.api.Stroke;
-
+/**
+ * Sketch Event raised by the Sketch Listener when a Sketch is finished.
+ */
 final class SketchEvent extends Event {
 
-    private static final EventType<Event> EVENT_TYPE = new EventType<>("SketchEvent");
-
+    /** The serial version uid. */
     private static final long serialVersionUID = 6298317566196151642L;
 
-    private final Stroke stroke;
+    /** The Sketch Event type. */
+    private static final EventType<Event> EVENT_TYPE = new EventType<>(
+	    "SketchEvent");
 
-    SketchEvent(final List<Point2D> sketchData) {
-        super(EVENT_TYPE);
-        stroke = new Stroke(1.0, points(sketchData));
+    /** The Sketch points list. */
+    private final List<Point2D> sketchPoints;
+
+    /** the Sketch displayed polyline in the JavaFX container. */
+    private final Polyline sketchDrawing;
+
+    /**
+     * Constructor.
+     *
+     * @param sketchPointsVal
+     *            The Sketch points list
+     * @param sketchDrawingVal
+     *            the Sketch displayed polyline
+     */
+    SketchEvent(final List<Point2D> sketchPointsVal,
+	    final Polyline sketchDrawingVal) {
+	super(EVENT_TYPE);
+	sketchPoints = sketchPointsVal;
+	sketchDrawing = sketchDrawingVal;
     }
 
-    final Stroke getSketchData() {
-        return stroke;
+    /**
+     * Get the Sketch points list.
+     *
+     * @return the Sketch points list
+     */
+    final List<Point2D> getSketchPoints() {
+	return sketchPoints;
     }
 
-    private static Point[] points(final List<Point2D> sketchData) {
-        final Point[] result = new Point[sketchData.size()];
-        int i = 0;
-        for (final Point2D pt : sketchData) {
-            result[i] = new Point() {
-
-                @Override
-                public final String toString() {
-                    return "[" + x() + ", " + y() + "]";
-                }
-
-                @Override
-                public final double x() {
-                    return pt.getX();
-                }
-
-                @Override
-                public final double y() {
-                    return pt.getY();
-                }
-            };
-            i++;
-        }
-        return result;
+    /**
+     * Get the Sketch displayed polyline.
+     *
+     * @return the Sketch displayed polyline
+     */
+    final Polyline getSketchDrawing() {
+	return sketchDrawing;
     }
 
 }
