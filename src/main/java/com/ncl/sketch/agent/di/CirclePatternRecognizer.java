@@ -71,7 +71,8 @@ final class CirclePatternRecognizer implements PatternRecognizer {
         }
         final RegressionLine rl = ls.regressionLine(x, directionGraph);
         final double perfectSlope = TWO_PI / strokeSize;
-        final double slopeError = Math.abs(rl.slope() - perfectSlope) / perfectSlope;
+        final double absActualSlope = Math.abs(rl.slope());
+        final double slopeError = Math.abs(absActualSlope - perfectSlope) / perfectSlope;
         return rl.coefficientOfDetermination() >= minCorrelation && slopeError < maxSlopeError;
     }
 }
