@@ -8,63 +8,92 @@ import com.ncl.sketch.agent.api.Stroke;
 /**
  * A specialized {@link PatternRecognizer} that recognizes {@link Line line}s.
  */
-final class LinePatternRecognizer implements PatternRecognizer {
+final class LinePatternRecognizer implements PatternRecognizer,
+	DefaultPatternRecognizerParameters {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
-    private final double minCorrelation;
+    private double minCorrelation;
 
-    private final double maxAreaRatio;
+    private double maxAreaRatio;
 
     private final LeastSquares ls;
 
     /**
      * Constructor.
-     * 
-     * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess the fit of the
-     *            computed regression line. The higher the value the more restrictive the fit will be. A value of
+     *
+     * @param minimumCorrelation
+     *            a {@code double} in range <i>0.0</i> to <i>1.0</i> used to
+     *            assess the fit of the computed regression line. The higher the
+     *            value the more restrictive the fit will be. A value of
      *            <i>0.7</i> is a good comprise to ensure correct recognition
-     * @param maximumAreaRatio max ratio (feature area of this stroke to the candidate line / candidate line area)
-     *            above which the candidate line found by linear regression will be considered unacceptable. A good
+     * @param maximumAreaRatio
+     *            max ratio (feature area of this stroke to the candidate line /
+     *            candidate line area) above which the candidate line found by
+     *            linear regression will be considered unacceptable. A good
      *            value is <i>1.0</i>
      */
-    LinePatternRecognizer(final double minimumCorrelation, final double maximumAreaRatio) {
-        minCorrelation = minimumCorrelation;
-        maxAreaRatio = maximumAreaRatio;
-        ls = new LeastSquares();
+    LinePatternRecognizer(final double minimumCorrelation,
+	    final double maximumAreaRatio) {
+	minCorrelation = minimumCorrelation;
+	maxAreaRatio = maximumAreaRatio;
+	ls = new LeastSquares();
     }
 
     @Override
-    public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {
-        LOGGER.fine("Processing stroke with " + stroke.size() + " points");
-        final boolean fitsLine = fitsLine(stroke);
-        final boolean isLine;
-        if (fitsLine) {
-            final Line candidate = new Line(stroke.get(0), stroke.get(stroke.size() - 1));
-            final double featureArea = Strokes.featureArea(stroke, candidate);
-            final double candidateArea = Geometry2D.lengthOf(candidate) * stroke.width();
-            final double areaRatio = featureArea / candidateArea;
-            isLine = areaRatio < maxAreaRatio;
-            LOGGER.fine("Feature area: "
-                + featureArea
-                + "; Candidate area: "
-                + candidateArea
-                + "; ratio: "
-                + areaRatio);
-            if (isLine) {
-                LOGGER.info("Recognized line: " + candidate + " from stroke with " + stroke.size() + " points");
-                result.add(candidate);
-            }
-        } else {
-            isLine = false;
-        }
-        return isLine;
+    public final boolean recognize(final Stroke stroke,
+	    final StrokeRecognitionResult result) {
+	LOGGER.fine("Processing stroke with " + stroke.size() + " points");
+	final boolean fitsLine = fitsLine(stroke);
+	final boolean isLine;
+	if (fitsLine) {
+	    final Line candidate = new Line(stroke.get(0), stroke.get(stroke
+		    .size() - 1));
+	    final double featureArea = Strokes.featureArea(stroke, candidate);
+	    final double candidateArea = Geometry2D.lengthOf(candidate)
+		    * stroke.width();
+	    final double areaRatio = featureArea / candidateArea;
+	    isLine = areaRatio < maxAreaRatio;
+	    LOGGER.fine("Feature area: " + featureArea + "; Candidate area: "
+		    + candidateArea + "; ratio: " + areaRatio);
+	    if (isLine) {
+		LOGGER.info("Recognized line: " + candidate
+			+ " from stroke with " + stroke.size() + " points");
+		result.add(candidate);
+	    }
+	} else {
+	    isLine = false;
+	}
+	return isLine;
     }
 
     private boolean fitsLine(final Stroke stroke) {
-        final RegressionLine rl = ls.regressionLine(stroke);
-        return rl.coefficientOfDetermination() >= minCorrelation;
+	final RegressionLine rl = ls.regressionLine(stroke);
+	return rl.coefficientOfDetermination() >= minCorrelation;
 
     }
 
+    @Override
+    public DefaultPatternRecognizerParameters setMinCorrelation(
+	    final double minCorrelation) {
+	this.minCorrelation = minCorrelation;
+	return this;
+    }
+
+    @Override
+    public DefaultPatternRecognizerParameters setMaxAreaRatio(
+	    final double maxAreaRatio) {
+	this.maxAreaRatio = maxAreaRatio;
+	return this;
+    }
+
+    @Override
+    public double getMinCorrelation() {
+	return minCorrelation;
+    }
+
+    @Override
+    public double getMaxAreaRatio() {
+	return maxAreaRatio;
+    }
 }

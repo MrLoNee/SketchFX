@@ -7,13 +7,21 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.StringConverter;
 
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
@@ -21,20 +29,31 @@ import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.DomainIndependantAgentParameters;
 import com.ncl.sketch.agent.di.DomainIndependentAgent;
 
 public class SketchRecognitionHMI extends Application {
 
     private SketchRecognitionAgent sketchRecognitionAgent;
 
+    private DomainIndependantAgentParameters domainIndependantAgentParameters;
+
     private ScheduledExecutorService executor;
 
     @Override
     public void start(final Stage stage) throws Exception {
-	sketchRecognitionAgent = new DomainIndependentAgent();
+	final DomainIndependentAgent domainIndependentAgent = new DomainIndependentAgent();
+	domainIndependantAgentParameters = domainIndependentAgent;
+	sketchRecognitionAgent = domainIndependentAgent;
 	executor = Executors.newSingleThreadScheduledExecutor();
 
+	final BorderPane borderPane = new BorderPane();
 	final Group container = new Group();
+
+//	borderPane.setCenter(container);
+	final Node parametersPanel = createParametersPanel();
+	borderPane.setRight(parametersPanel);
+
 	final Scene scene = new Scene(container);
 
 	final SketchListener sketchListener = new SketchListener(scene,
@@ -101,6 +120,46 @@ public class SketchRecognitionHMI extends Application {
 	stage.toFront();
 	stage.setTitle("NCL Sketch Recognition Alpha Prototype");
 	stage.show();
+    }
+
+    private Node createParametersPanel() {
+	final FlowPane flow = new FlowPane();
+	flow.setPadding(new Insets(5, 0, 5, 0));
+	flow.setVgap(4);
+	flow.setHgap(4);
+	flow.setPrefWrapLength(170); // preferred width allows for two columns
+
+	// k parameter
+	final Slider kSlider = new Slider(1, 10,
+		domainIndependantAgentParameters.k());
+	kSlider.setBlockIncrement(1);
+	kSlider.setMajorTickUnit(1);
+	kSlider.setLabelFormatter(new StringConverter<Double>() {
+	    @Override
+	    public String toString(final Double n) {
+		if (n < 2)
+		    return "k";
+
+		return "";
+	    }
+
+	    @Override
+	    public Double fromString(final String arg0) {
+		return 0d;
+	    }
+	});
+	kSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+	    @Override
+	    public void changed(
+		    final ObservableValue<? extends Number> obsValue,
+		    final Number previousValue, final Number newValue) {
+		domainIndependantAgentParameters.k(newValue.intValue());
+	    }
+
+	});
+	flow.getChildren().add(kSlider);
+	return flow;
     }
 
     private Stroke stroke(final List<Point2D> sketchPoints) {
