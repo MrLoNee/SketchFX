@@ -38,8 +38,12 @@ final class Strokes {
         double previousDirection = Double.MIN_VALUE;
         for (int i = 0; i < strokeSize - 1; i++) {
             final double direction = direction(stroke, i);
-            if (i > 0 && direction < 0 && previousDirection > 0) {
-                shift++;
+            if (i > 0) {
+                if (direction < 0 && previousDirection > 0) {
+                    shift++;
+                } else if (direction > 0 && previousDirection < 0) {
+                    shift--;
+                }
             }
 
             result[i] = direction + TWO_PI * shift;
