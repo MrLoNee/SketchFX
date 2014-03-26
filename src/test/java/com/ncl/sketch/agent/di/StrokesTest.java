@@ -12,12 +12,6 @@ public final class StrokesTest {
 
     private static final double DELTA = 0.00001;
 
-    private static Stroke stroke() {
-        final double[] x = { 0, 0, 2.5, 5, 5 };
-        final double[] y = { 0, 5, 7.5, 5, 0 };
-        return GeometricElements.stroke(x, y);
-    }
-
     @Test
     public final void direction() {
         final Stroke stroke = stroke();
@@ -27,6 +21,38 @@ public final class StrokesTest {
         assertEquals(0.785398163, directionGraph[1], DELTA);
         assertEquals(2 * Math.PI - 0.785398163, directionGraph[2], DELTA);
         assertEquals(2 * Math.PI - Math.PI / 2, directionGraph[3], DELTA);
+    }
+
+    @Test
+    public final void directionAntiClockwiseCircle() {
+        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final double[] directionGraph = Strokes.directionGraph(stroke);
+        assertEquals(7, directionGraph.length);
+        assertEquals(0, directionGraph[0], DELTA);
+        assertEquals(0.7853981633974483, directionGraph[1], DELTA);
+        assertEquals(1.5707963267948966, directionGraph[2], DELTA);
+        assertEquals(2.356194490192345, directionGraph[3], DELTA);
+        assertEquals(3.141592653589793, directionGraph[4], DELTA);
+        assertEquals(3.9269908169872414, directionGraph[5], DELTA);
+        assertEquals(4.71238898038469, directionGraph[6], DELTA);
+    }
+
+    @Test
+    public final void directionClockwiseCircle() {
+        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final double[] directionGraph = Strokes.directionGraph(stroke);
+        assertEquals(7, directionGraph.length);
+        assertEquals(1.5707963267948966, directionGraph[0], DELTA);
+        assertEquals(0.7853981633974483, directionGraph[1], DELTA);
+        assertEquals(0.0, directionGraph[2], DELTA);
+        assertEquals(-0.7853981633974483, directionGraph[3], DELTA);
+        assertEquals(-1.5707963267948966, directionGraph[4], DELTA);
+        assertEquals(-2.356194490192345, directionGraph[5], DELTA);
+        assertEquals(-3.141592653589793, directionGraph[6], DELTA);
     }
 
     @Test
@@ -57,5 +83,11 @@ public final class StrokesTest {
         final double[] y = { 0, 5, 7.5 };
         final Stroke stroke = GeometricElements.stroke(x, y);
         assertEquals(1, Strokes.indexOfMaxCurvature(stroke, 2));
+    }
+
+    private static Stroke stroke() {
+        final double[] x = { 0, 0, 2.5, 5, 5 };
+        final double[] y = { 0, 5, 7.5, 5, 0 };
+        return GeometricElements.stroke(x, y);
     }
 }
