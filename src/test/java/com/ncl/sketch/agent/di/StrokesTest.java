@@ -30,7 +30,23 @@ public final class StrokesTest {
     }
 
     @Test
-    public final void directionAntiClockwiseCircle() {
+    public final void directionClockwiseCircle() {
+        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final double[] directionGraph = Strokes.directionGraph(stroke);
+        assertEquals(7, directionGraph.length);
+        assertEquals(1.5707963267948966, directionGraph[0], DELTA);
+        assertEquals(0.7853981633974483, directionGraph[1], DELTA);
+        assertEquals(0.0, directionGraph[2], DELTA);
+        assertEquals(-0.7853981633974483, directionGraph[3], DELTA);
+        assertEquals(-1.5707963267948966, directionGraph[4], DELTA);
+        assertEquals(-2.356194490192345, directionGraph[5], DELTA);
+        assertEquals(-3.141592653589793, directionGraph[6], DELTA);
+    }
+
+    @Test
+    public final void directionCounterClockwiseCircle() {
         final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
         final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
         final Stroke stroke = GeometricElements.stroke(x, y);
@@ -46,19 +62,107 @@ public final class StrokesTest {
     }
 
     @Test
-    public final void directionClockwiseCircle() {
-        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
-        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
+    public final void directionRectangle() {
+        final int height = 50;
+        final int width = 10;
+        final double[] x = new double[2 * (height + width)];
+        final double[] y = new double[2 * (height + width)];
+
+        int index = 0;
+        for (int i = 0; i < height; i++) {
+            x[index] = 0;
+            y[index] = i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = i;
+            y[index] = height;
+            index++;
+        }
+        for (int i = 0; i < height; i++) {
+            x[index] = width;
+            y[index] = height - i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = width - i;
+            y[index] = 0;
+            index++;
+        }
+
         final Stroke stroke = GeometricElements.stroke(x, y);
         final double[] directionGraph = Strokes.directionGraph(stroke);
-        assertEquals(7, directionGraph.length);
-        assertEquals(1.5707963267948966, directionGraph[0], DELTA);
-        assertEquals(0.7853981633974483, directionGraph[1], DELTA);
-        assertEquals(0.0, directionGraph[2], DELTA);
-        assertEquals(-0.7853981633974483, directionGraph[3], DELTA);
-        assertEquals(-1.5707963267948966, directionGraph[4], DELTA);
-        assertEquals(-2.356194490192345, directionGraph[5], DELTA);
-        assertEquals(-3.141592653589793, directionGraph[6], DELTA);
+
+        assertEquals(119, directionGraph.length);
+        index = 0;
+        for (int i = 0; i < height; i++) {
+            assertEquals(Math.PI / 2, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            assertEquals(0.0, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < height; i++) {
+            assertEquals(-Math.PI / 2, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < width - 1; i++) {
+            assertEquals(-Math.PI, directionGraph[index], DELTA);
+            index++;
+        }
+    }
+
+    @Test
+    public final void directionSquare() {
+        final int height = 50;
+        final int width = 50;
+        final double[] x = new double[2 * (height + width)];
+        final double[] y = new double[2 * (height + width)];
+
+        int index = 0;
+        for (int i = 0; i < height; i++) {
+            x[index] = 0;
+            y[index] = i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = i;
+            y[index] = height;
+            index++;
+        }
+        for (int i = 0; i < height; i++) {
+            x[index] = width;
+            y[index] = height - i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = width - i;
+            y[index] = 0;
+            index++;
+        }
+
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final double[] directionGraph = Strokes.directionGraph(stroke);
+
+        assertEquals(199, directionGraph.length);
+        index = 0;
+        for (int i = 0; i < height; i++) {
+            assertEquals(Math.PI / 2, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            assertEquals(0.0, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < height; i++) {
+            assertEquals(-Math.PI / 2, directionGraph[index], DELTA);
+            index++;
+        }
+        for (int i = 0; i < width - 1; i++) {
+            assertEquals(-Math.PI, directionGraph[index], DELTA);
+            index++;
+        }
     }
 
     @Test
@@ -90,4 +194,5 @@ public final class StrokesTest {
         final Stroke stroke = GeometricElements.stroke(x, y);
         assertEquals(1, Strokes.indexOfMaxCurvature(stroke, 2));
     }
+
 }

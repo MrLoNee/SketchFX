@@ -46,11 +46,11 @@ public final class CirclePatternRecognizerTest {
         }
         for (int i = 0; i < height; i++) {
             x[index] = width;
-            y[index] = height - i - 1;
+            y[index] = height - i;
             index++;
         }
         for (int i = 0; i < width; i++) {
-            x[index] = width - i - 1;
+            x[index] = width - i;
             y[index] = 0;
             index++;
         }
@@ -63,9 +63,45 @@ public final class CirclePatternRecognizerTest {
     }
 
     @Test
-    public final void recognizeAntiClockwiseCircle() {
-        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
-        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
+    public final void doNotRecognizeSquare() {
+        final int height = 50;
+        final int width = 50;
+        final double[] x = new double[2 * (height + width)];
+        final double[] y = new double[2 * (height + width)];
+
+        int index = 0;
+        for (int i = 0; i < height; i++) {
+            x[index] = 0;
+            y[index] = i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = i;
+            y[index] = height;
+            index++;
+        }
+        for (int i = 0; i < height; i++) {
+            x[index] = width;
+            y[index] = height - i;
+            index++;
+        }
+        for (int i = 0; i < width; i++) {
+            x[index] = width - i;
+            y[index] = 0;
+            index++;
+        }
+
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final StrokeRecognitionResult result = new StrokeRecognitionResult();
+
+        assertFalse(recognizer.recognize(stroke, result));
+    }
+
+    @Test
+    public final void recognizeClockwiseCircle() {
+        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
         final Stroke stroke = GeometricElements.stroke(x, y);
         final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
@@ -80,9 +116,9 @@ public final class CirclePatternRecognizerTest {
     }
 
     @Test
-    public final void recognizeClockwiseCircle() {
-        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
-        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
+    public final void recognizeCounterClockwiseCircle() {
+        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
         final Stroke stroke = GeometricElements.stroke(x, y);
         final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
