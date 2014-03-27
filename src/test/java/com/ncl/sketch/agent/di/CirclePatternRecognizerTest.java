@@ -20,7 +20,7 @@ public final class CirclePatternRecognizerTest {
         final double[] x = { 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 };
         final double[] y = { 115, 117, 120, 123, 126, 129, 132, 135, 139, 142, 146, 150, 154, 159, 164 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.95, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));
@@ -56,7 +56,7 @@ public final class CirclePatternRecognizerTest {
         }
 
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.95, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));
@@ -92,7 +92,7 @@ public final class CirclePatternRecognizerTest {
         }
 
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.95, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));
@@ -103,7 +103,7 @@ public final class CirclePatternRecognizerTest {
         final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
         final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.95, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertTrue(recognizer.recognize(stroke, result));
@@ -120,7 +120,7 @@ public final class CirclePatternRecognizerTest {
         final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
         final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.95, 1.0, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertTrue(recognizer.recognize(stroke, result));

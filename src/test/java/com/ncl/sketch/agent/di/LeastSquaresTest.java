@@ -31,6 +31,28 @@ public class LeastSquaresTest {
     }
 
     @Test
+    public final void regressionLineOnIrregularSteps() {
+        final double[] x = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+        final double[] y = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 };
+        final LeastSquares ls = new LeastSquares();
+        final RegressionLine rl = ls.regressionLine(x, y);
+        assertEquals(-4.342105, rl.yIntercept(), DELTA);
+        assertEquals(1.127819, rl.slope(), DELTA);
+        assertEquals(0.75187, rl.coefficientOfDetermination(), DELTA);
+    }
+
+    @Test
+    public final void regressionLineOnRegularSteps() {
+        final double[] x = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+        final double[] y = { 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 16, 16, 16, 16, 16 };
+        final LeastSquares ls = new LeastSquares();
+        final RegressionLine rl = ls.regressionLine(x, y);
+        assertEquals(-2.15789, rl.yIntercept(), DELTA);
+        assertEquals(1.015037, rl.slope(), DELTA);
+        assertEquals(0.932177, rl.coefficientOfDetermination(), DELTA);
+    }
+
+    @Test
     public final void regressionLineVertical() {
         final double[] x = { 5, 5, 5, 5, 5 };
         final double[] y = { 1, 2, 3, 4, 5 };
