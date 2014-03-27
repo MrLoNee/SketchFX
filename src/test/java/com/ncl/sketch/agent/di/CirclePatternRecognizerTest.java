@@ -110,9 +110,9 @@ public final class CirclePatternRecognizerTest {
         final List<Circle> circles = result.circles();
         assertEquals(1, circles.size());
         final Circle circle = circles.get(0);
-        assertEquals(1.5811388300841895, circle.radius(), DELTA);
-        assertEquals(101.5, circle.center().x(), DELTA);
-        assertEquals(101.5, circle.center().y(), DELTA);
+        assertEquals(1.0, circle.radius(), DELTA);
+        assertEquals(0.0, circle.center().x(), DELTA);
+        assertEquals(0.0, circle.center().y(), DELTA);
     }
 
     @Test
@@ -127,9 +127,9 @@ public final class CirclePatternRecognizerTest {
         final List<Circle> circles = result.circles();
         assertEquals(1, circles.size());
         final Circle circle = circles.get(0);
-        assertEquals(1.5811388300841895, circle.radius(), DELTA);
-        assertEquals(101.5, circle.center().x(), DELTA);
-        assertEquals(101.5, circle.center().y(), DELTA);
+        assertEquals(1.0, circle.radius(), DELTA);
+        assertEquals(0.0, circle.center().x(), DELTA);
+        assertEquals(0.0, circle.center().y(), DELTA);
     }
 
 }

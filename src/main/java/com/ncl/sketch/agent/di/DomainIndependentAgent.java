@@ -37,22 +37,22 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent, Dom
     }
 
     @Override
-    public CirclePatternRecognizerParameters circlePatternRecognizerParameters() {
+    public final CirclePatternRecognizerParameters circlePatternRecognizerParameters() {
         return circleRecognizer;
     }
 
     @Override
-    public int k() {
+    public final int k() {
         return k;
     }
 
     @Override
-    public void k(final int kVal) {
+    public final void k(final int kVal) {
         k = kVal;
     }
 
     @Override
-    public DefaultPatternRecognizerParameters linePatternRecognizerParameters() {
+    public final DefaultPatternRecognizerParameters linePatternRecognizerParameters() {
         return lineRecognizer;
     }
 
