@@ -18,7 +18,7 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
 
     private double minCorrelation;
 
-    private double maxAreaRatio;
+    private final double maxAreaError;
 
     private double maxSlopeError;
 
@@ -28,21 +28,26 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
      * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess the fit of the
      *            computed regression line derived from the direction graph of the stroke. The higher the value the
      *            more restrictive the fit will be
-     * @param maximumAreaRatio max ratio (feature area of this stroke to the candidate circle / candidate circle
-     *            area) above which the candidate circle will be considered unacceptable. A good value is
-     *            <i>1.0</i>
+     * @param maximumAreaError the maximum error between the feature area of this stroke to the candidate circle
+     *            center and the candidate circle area above which the candidate circle will be considered
+     *            unacceptable. This is a {@code double} in range <i>0.0</i> to <i>1.0</i> with a low value
+     *            (typically <i>0.1</i>)
      */
-    CirclePatternRecognizer(final double minimumCorrelation, final double maximumAreaRatio,
+    CirclePatternRecognizer(final double minimumCorrelation, final double maximumAreaError,
             final double maximumSlopeError) {
         minCorrelation = minimumCorrelation;
-        maxAreaRatio = maximumAreaRatio;
+        maxAreaError = maximumAreaError;
         maxSlopeError = maximumSlopeError;
         ls = new LeastSquares();
     }
 
     @Override
     public final double getMaxAreaRatio() {
-        return maxAreaRatio;
+        /*
+         * FIXME : Parameter interface shall be fully split between circle and line as there is nothing in common -
+         * even the minimum correlation has a different meaning.
+         */
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -70,14 +75,14 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
             final Circle candidate = Geometry2D.circle(stroke);
             final double featureArea = Strokes.featureArea(stroke, candidate.center());
             final double candidateArea = Geometry2D.areaOf(candidate);
-            final double areaRatio = featureArea / candidateArea;
-            isCircle = areaRatio < maxAreaRatio;
-            LOGGER.fine("Feature area: "
+            final double areaError = error(featureArea, candidateArea);
+            isCircle = areaError < maxAreaError;
+            LOGGER.info("Feature area: "
                 + featureArea
                 + "; Candidate area: "
                 + candidateArea
-                + "; ratio: "
-                + areaRatio);
+                + "; error: "
+                + areaError);
             if (isCircle) {
                 LOGGER.info("Recognized circle: " + candidate + " from stroke with " + stroke.size() + " points");
                 result.add(candidate);
@@ -90,8 +95,11 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
 
     @Override
     public final DefaultPatternRecognizerParameters setMaxAreaRatio(final double maxAreaRatioVal) {
-        maxAreaRatio = maxAreaRatioVal;
-        return this;
+        /*
+         * FIXME : Parameter interface shall be fully split between circle and line as there is nothing in common -
+         * even the minimum correlation has a different meaning.
+         */
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -110,7 +118,11 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
         final RegressionLine rl = ls.regressionLine(x, directionGraph);
         final double perfectSlope = TWO_PI / strokeSize;
         final double absActualSlope = Math.abs(rl.slope());
-        final double slopeError = Math.abs(absActualSlope - perfectSlope) / perfectSlope;
+        final double slopeError = error(absActualSlope, perfectSlope);
         return rl.coefficientOfDetermination() >= minCorrelation && slopeError < maxSlopeError;
+    }
+
+    private static double error(final double actual, final double expected) {
+        return Math.abs(actual - expected) / expected;
     }
 }

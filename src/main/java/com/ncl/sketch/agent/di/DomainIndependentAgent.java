@@ -31,9 +31,29 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent, Dom
     public DomainIndependentAgent() {
         recgonizers = new PatternRecognizerChain();
         lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
-        circleRecognizer = new CirclePatternRecognizer(0.7, 1.0, 0.2);
+        circleRecognizer = new CirclePatternRecognizer(0.9, 0.1, 0.2);
         recgonizers.add(lineRecognizer).add(circleRecognizer);
         k = 2;
+    }
+
+    @Override
+    public final CirclePatternRecognizerParameters circlePatternRecognizerParameters() {
+        return circleRecognizer;
+    }
+
+    @Override
+    public final int k() {
+        return k;
+    }
+
+    @Override
+    public final void k(final int kVal) {
+        k = kVal;
+    }
+
+    @Override
+    public final DefaultPatternRecognizerParameters linePatternRecognizerParameters() {
+        return lineRecognizer;
     }
 
     @Override
@@ -72,25 +92,5 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent, Dom
                 }
             }
         }
-    }
-
-    @Override
-    public void k(final int kVal) {
-        k = kVal;
-    }
-
-    @Override
-    public int k() {
-        return k;
-    }
-
-    @Override
-    public DefaultPatternRecognizerParameters linePatternRecognizerParameters() {
-        return lineRecognizer;
-    }
-
-    @Override
-    public CirclePatternRecognizerParameters circlePatternRecognizerParameters() {
-        return circleRecognizer;
     }
 }

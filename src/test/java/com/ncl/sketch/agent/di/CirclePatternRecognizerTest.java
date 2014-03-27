@@ -20,7 +20,7 @@ public final class CirclePatternRecognizerTest {
         final double[] x = { 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 };
         final double[] y = { 115, 117, 120, 123, 126, 129, 132, 135, 139, 142, 146, 150, 154, 159, 164 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 0.1, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));
@@ -56,44 +56,69 @@ public final class CirclePatternRecognizerTest {
         }
 
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 0.1, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertFalse(recognizer.recognize(stroke, result));
     }
 
     @Test
-    public final void recognizeAntiClockwiseCircle() {
-        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
-        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
+    public final void doNotRecognizeSquare() {
+        final double[] x = { 100, 100, 100, 101, 102, 102, 102, 101 };
+        final double[] y = { 100, 101, 102, 102, 102, 101, 100, 100 };
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 0.1, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
-        assertTrue(recognizer.recognize(stroke, result));
-        final List<Circle> circles = result.circles();
-        assertEquals(1, circles.size());
-        final Circle circle = circles.get(0);
-        assertEquals(1.5811388300841895, circle.radius(), DELTA);
-        assertEquals(101.5, circle.center().x(), DELTA);
-        assertEquals(101.5, circle.center().y(), DELTA);
+        assertFalse(recognizer.recognize(stroke, result));
     }
 
     @Test
     public final void recognizeClockwiseCircle() {
-        final double[] x = { 100, 100, 101, 102, 103, 103, 102, 101 };
-        final double[] y = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        // FIXME : add noise and shift center to any point but (0, 0).
+        final int size = 36;
+        final double[] x = new double[size];
+        final double[] y = new double[size];
+        for (int index = 0; index < size; index++) {
+            final double angle = Math.toRadians(10 * (size - index - 1));
+            x[index] = Math.cos(angle);
+            y[index] = Math.sin(angle);
+        }
         final Stroke stroke = GeometricElements.stroke(x, y);
-        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 0.1, 0.15);
         final StrokeRecognitionResult result = new StrokeRecognitionResult();
 
         assertTrue(recognizer.recognize(stroke, result));
         final List<Circle> circles = result.circles();
         assertEquals(1, circles.size());
         final Circle circle = circles.get(0);
-        assertEquals(1.5811388300841895, circle.radius(), DELTA);
-        assertEquals(101.5, circle.center().x(), DELTA);
-        assertEquals(101.5, circle.center().y(), DELTA);
+        assertEquals(1.0, circle.radius(), DELTA);
+        assertEquals(0.0, circle.center().x(), DELTA);
+        assertEquals(0.0, circle.center().y(), DELTA);
+    }
+
+    @Test
+    public final void recognizeCounterClockwiseCircle() {
+        // FIXME : add noise and shift center to any point but (0, 0).
+        final int size = 36;
+        final double[] x = new double[size];
+        final double[] y = new double[size];
+        for (int index = 0; index < size; index++) {
+            final double angle = Math.toRadians(10 * index);
+            x[index] = Math.cos(angle);
+            y[index] = Math.sin(angle);
+        }
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final CirclePatternRecognizer recognizer = new CirclePatternRecognizer(0.9, 0.1, 0.15);
+        final StrokeRecognitionResult result = new StrokeRecognitionResult();
+
+        assertTrue(recognizer.recognize(stroke, result));
+        final List<Circle> circles = result.circles();
+        assertEquals(1, circles.size());
+        final Circle circle = circles.get(0);
+        assertEquals(1.0, circle.radius(), DELTA);
+        assertEquals(0.0, circle.center().x(), DELTA);
+        assertEquals(0.0, circle.center().y(), DELTA);
     }
 
 }
