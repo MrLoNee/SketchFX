@@ -31,7 +31,7 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent, Dom
     public DomainIndependentAgent() {
         recgonizers = new PatternRecognizerChain();
         lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
-        circleRecognizer = new CirclePatternRecognizer(0.9, 1.0, 0.15);
+        circleRecognizer = new CirclePatternRecognizer(0.7, 1.0, 0.2);
         recgonizers.add(lineRecognizer).add(circleRecognizer);
         k = 2;
     }

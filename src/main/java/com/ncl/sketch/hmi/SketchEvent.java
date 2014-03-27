@@ -16,8 +16,7 @@ final class SketchEvent extends Event {
     private static final long serialVersionUID = 6298317566196151642L;
 
     /** The Sketch Event type. */
-    private static final EventType<Event> EVENT_TYPE = new EventType<>(
-	    "SketchEvent");
+    private static final EventType<Event> EVENT_TYPE = new EventType<>("SketchEvent");
 
     /** The Sketch points list. */
     private final List<Point2D> sketchPoints;
@@ -27,35 +26,32 @@ final class SketchEvent extends Event {
 
     /**
      * Constructor.
-     *
-     * @param sketchPointsVal
-     *            The Sketch points list
-     * @param sketchDrawingVal
-     *            the Sketch displayed polyline
+     * 
+     * @param sketchPointsVal The Sketch points list
+     * @param sketchDrawingVal the Sketch displayed polyline
      */
-    SketchEvent(final List<Point2D> sketchPointsVal,
-	    final Polyline sketchDrawingVal) {
-	super(EVENT_TYPE);
-	sketchPoints = sketchPointsVal;
-	sketchDrawing = sketchDrawingVal;
+    SketchEvent(final List<Point2D> sketchPointsVal, final Polyline sketchDrawingVal) {
+        super(EVENT_TYPE);
+        sketchPoints = sketchPointsVal;
+        sketchDrawing = sketchDrawingVal;
     }
 
     /**
      * Get the Sketch points list.
-     *
+     * 
      * @return the Sketch points list
      */
     final List<Point2D> getSketchPoints() {
-	return sketchPoints;
+        return sketchPoints;
     }
 
     /**
      * Get the Sketch displayed polyline.
-     *
+     * 
      * @return the Sketch displayed polyline
      */
     final Polyline getSketchDrawing() {
-	return sketchDrawing;
+        return sketchDrawing;
     }
 
 }

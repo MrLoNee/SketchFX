@@ -59,7 +59,7 @@ public final class LinePatternRecognizerTest {
         assertEquals(first, line.start());
         assertEquals(last, line.end());
     }
-    
+
     @Test
     public final void recognizesLine2Points() {
         final LinePatternRecognizer recognizer = new LinePatternRecognizer(0.7, 1.0);

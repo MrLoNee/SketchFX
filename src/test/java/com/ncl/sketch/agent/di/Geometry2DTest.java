@@ -31,6 +31,20 @@ public final class Geometry2DTest {
     }
 
     @Test
+    public final void circumcircle() {
+        final Point p1 = GeometricElements.point(154, 15);
+        final Point p2 = GeometricElements.point(-15, 45);
+        final Point p3 = GeometricElements.point(54, 145);
+        final Circle circumcircle = Geometry2D.circumcircle(p1, p2, p3);
+        final Point circumcenter = circumcircle.center();
+        assertEquals(74.32340, circumcenter.x(), DELTA);
+        assertEquals(57.17185, circumcenter.y(), DELTA);
+        assertEquals(circumcircle.radius(), Geometry2D.distance(p1, circumcenter), DELTA);
+        assertEquals(circumcircle.radius(), Geometry2D.distance(p2, circumcenter), DELTA);
+        assertEquals(circumcircle.radius(), Geometry2D.distance(p3, circumcenter), DELTA);
+    }
+
+    @Test
     public final void distance() {
         final Point from = GeometricElements.point(5.6, -18.9);
         final Point to = GeometricElements.point(154, 89.45);

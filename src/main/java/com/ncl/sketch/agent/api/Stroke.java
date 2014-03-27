@@ -47,9 +47,8 @@ public final class Stroke {
     }
 
     /**
-     * Returns a view of the portion of this stroke between the specified
-     * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive. If
-     * <tt>fromIndex</tt> and <tt>toIndex</tt> are equal, the returned stroke is
+     * Returns a view of the portion of this stroke between the specified <tt>fromIndex</tt>, inclusive, and
+     * <tt>toIndex</tt>, exclusive. If <tt>fromIndex</tt> and <tt>toIndex</tt> are equal, the returned stroke is
      * empty.
      * 
      * @see List#subList(int, int)
