@@ -53,8 +53,7 @@ final class Geometry2D {
         final double[] intersection = intersection(a, d, c, b);
         if (intersection == null) {
             /*
-             * Simple quadrilateral. Add the two areas. If quadrilateral is concave this will also
-             * work.
+             * Simple quadrilateral. Add the two areas. If quadrilateral is concave this will also work.
              */
             final double a1 = signedAreaOf(a, b, c);
             final double a2 = signedAreaOf(c, d, a);
@@ -72,13 +71,12 @@ final class Geometry2D {
     }
 
     /**
-     * Returns a new {@link Circle circle} which takes the center of the stroke�s bounding box as
-     * its own center and the mean distance between the center and each stroke point as its radius.
+     * Returns a new {@link Circle circle} which takes the center of the stroke�s bounding box as its own center
+     * and the mean distance between the center and each stroke point as its radius.
      * 
      * @param stroke the {@link Stroke stroke}
-     * @return a new {@link Circle circle} which takes the center of the stroke�s bounding box as
-     *         its own center and the mean distance between the center and each stroke point as its
-     *         radius
+     * @return a new {@link Circle circle} which takes the center of the stroke�s bounding box as its own center
+     *         and the mean distance between the center and each stroke point as its radius
      */
     static final Circle circle(final Stroke stroke) {
         double maxX = Double.MIN_VALUE;
@@ -109,6 +107,34 @@ final class Geometry2D {
     }
 
     /**
+     * Returns the circumcircle of the triangle defined by the three specified {@link Point point}s: the
+     * {@link Circle circle} which passes through all three point and whose center is equidistant from all three
+     * {@link Point point}s.
+     * 
+     * @param p1 the first point
+     * @param p2 the second point
+     * @param p3 the third point
+     * 
+     * @return the circumcircle of the triangle defined by the three specified {@link Point point}s
+     */
+    static final Circle circumcircle(final Point p1, final Point p2, final Point p3) {
+        final double[] p1p2 = vector(p1, p2);
+        final double[] p2p3 = vector(p2, p3);
+
+        final double slope12 = y(p1p2) / x(p1p2);
+        final double slope23 = y(p2p3) / x(p2p3);
+
+        final double centerX =
+                (slope12 * slope23 * (p1.y() - p3.y()) + slope23 * (p1.x() + p2.x()) - slope12 * (p2.x() + p3.x()))
+                    / (2 * (slope23 - slope12));
+        final double centerY = -1 * (centerX - (p1.x() + p2.x()) / 2) / slope12 + (p1.y() + p2.y()) / 2;
+
+        final Point center = point(centerX, centerY);
+        final double radius = distance(center, p1);
+        return new Circle(center, radius);
+    }
+
+    /**
      * Returns the distance between the two specified {@link Point point}s.
      * 
      * @param from first point
@@ -116,9 +142,7 @@ final class Geometry2D {
      * @return the distance between the two specified {@link Point point}s
      */
     static final double distance(final Point from, final Point to) {
-        final double a = from.x() - to.x();
-        final double b = from.y() - to.y();
-        return Math.sqrt(a * a + b * b);
+        return norm(vector(from, to));
     }
 
     /**
@@ -136,8 +160,8 @@ final class Geometry2D {
      * 
      * @param point the point to projected
      * @param line the line on which the point shall be orthogonally projected
-     * @return a new {@link Point point} that is the result of the orthogonal projection of the
-     *         specified point on the specified line
+     * @return a new {@link Point point} that is the result of the orthogonal projection of the specified point on
+     *         the specified line
      */
     static final Point project(final Point point, final Line line) {
         final Point start = line.start();
@@ -163,8 +187,7 @@ final class Geometry2D {
     }
 
     /*
-     * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null
-     * otherwise.
+     * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null otherwise.
      */
     private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
         final double[] p = vector(a);
@@ -196,6 +219,10 @@ final class Geometry2D {
 
     private static boolean isZero(final double val) {
         return Math.abs(val) < ZERO;
+    }
+
+    private static double norm(final double[] v) {
+        return Math.sqrt(x(v) * x(v) + y(v) * y(v));
     }
 
     private static Point point(final double x, final double y) {

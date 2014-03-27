@@ -7,15 +7,13 @@ import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A domain-independent {@link SketchRecognitionAgent}. This agent makes no
- * assumption about the context in which the sketch was drawn.
- *
- * @see <a
- *      href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&amp;rep=rep1&amp;type=pdf">A
+ * A domain-independent {@link SketchRecognitionAgent}. This agent makes no assumption about the context in which
+ * the sketch was drawn.
+ * 
+ * @see <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&amp;rep=rep1&amp;type=pdf">A
  *      Domain-Independent System for Sketch Recognition</a>
  */
-public final class DomainIndependentAgent implements SketchRecognitionAgent,
-	DomainIndependantAgentParameters {
+public final class DomainIndependentAgent implements SketchRecognitionAgent, DomainIndependantAgentParameters {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
@@ -31,70 +29,68 @@ public final class DomainIndependentAgent implements SketchRecognitionAgent,
      * Constructor.
      */
     public DomainIndependentAgent() {
-	recgonizers = new PatternRecognizerChain();
-	lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
-	circleRecognizer = new CirclePatternRecognizer(0.7, 1.0, 0.2);
-	recgonizers.add(lineRecognizer).add(circleRecognizer);
-	k = 2;
+        recgonizers = new PatternRecognizerChain();
+        lineRecognizer = new LinePatternRecognizer(0.7, 1.0);
+        circleRecognizer = new CirclePatternRecognizer(0.7, 1.0, 0.2);
+        recgonizers.add(lineRecognizer).add(circleRecognizer);
+        k = 2;
     }
 
     @Override
     public final RecognitionResult postProcess() {
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public final RecognitionResult recognize(final Stroke stroke) {
-	final StrokeRecognitionResult result = new StrokeRecognitionResult();
-	recognize(stroke, result);
-	return result;
+        final StrokeRecognitionResult result = new StrokeRecognitionResult();
+        recognize(stroke, result);
+        return result;
     }
 
-    private void recognize(final Stroke stroke,
-	    final StrokeRecognitionResult result) {
-	final boolean recognized = recgonizers.recognize(stroke, result);
-	if (!recognized) {
+    private void recognize(final Stroke stroke, final StrokeRecognitionResult result) {
+        final boolean recognized = recgonizers.recognize(stroke, result);
+        if (!recognized) {
 
-	    final int strokeSize = stroke.size();
-	    LOGGER.info("Entering recursive recognition phase for stroke with "
-		    + strokeSize + " points");
-	    if (strokeSize > 1) {
-		final int index = Strokes.indexOfMaxCurvature(stroke, k);
-		if (index > 0 && index < strokeSize - 1) {
-		    LOGGER.info("Splitting index = " + index);
-		    /*
-		     * split the stroke
-		     */
-		    final Stroke first = stroke.subStroke(0, index + 1);
-		    final Stroke second = stroke.subStroke(index, strokeSize);
+            final int strokeSize = stroke.size();
+            LOGGER.info("Entering recursive recognition phase for stroke with " + strokeSize + " points");
+            if (strokeSize > 1) {
+                final int index = Strokes.indexOfMaxCurvature(stroke, k);
+                if (index > 0 && index < strokeSize - 1) {
+                    LOGGER.info("Splitting index = " + index);
+                    /*
+                     * split the stroke
+                     */
+                    final Stroke first = stroke.subStroke(0, index + 1);
+                    final Stroke second = stroke.subStroke(index, strokeSize);
 
-		    /*
-		     * Apply recognition to both sub strokes.
-		     */
-		    recognize(first, result);
-		    recognize(second, result);
-		}
-	    }
-	}
+                    /*
+                     * Apply recognition to both sub strokes.
+                     */
+                    recognize(first, result);
+                    recognize(second, result);
+                }
+            }
+        }
     }
 
     @Override
     public void k(final int kVal) {
-	k = kVal;
+        k = kVal;
     }
 
     @Override
     public int k() {
-	return k;
+        return k;
     }
 
     @Override
     public DefaultPatternRecognizerParameters linePatternRecognizerParameters() {
-	return lineRecognizer;
+        return lineRecognizer;
     }
 
     @Override
     public CirclePatternRecognizerParameters circlePatternRecognizerParameters() {
-	return circleRecognizer;
+        return circleRecognizer;
     }
 }

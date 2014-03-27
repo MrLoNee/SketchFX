@@ -6,9 +6,9 @@ import java.util.List;
 import com.ncl.sketch.agent.api.Stroke;
 
 /**
- * A chain of {@link PatternRecognizer}. Patterns are execute in the order they are
- * {@link #add(PatternRecognizer)} to this chain. The execution stops as soon as one
- * {@link PatternRecognizer} has recognized a pattern.
+ * A chain of {@link PatternRecognizer}. Patterns are executed in the order they are
+ * {@link #add(PatternRecognizer) added} to this chain. The execution stops as soon as one pattern has been
+ * recognized.
  */
 final class PatternRecognizerChain implements PatternRecognizer {
 

@@ -42,154 +42,149 @@ public class SketchRecognitionHMI extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-	final DomainIndependentAgent domainIndependentAgent = new DomainIndependentAgent();
-	domainIndependantAgentParameters = domainIndependentAgent;
-	sketchRecognitionAgent = domainIndependentAgent;
-	executor = Executors.newSingleThreadScheduledExecutor();
+        final DomainIndependentAgent domainIndependentAgent = new DomainIndependentAgent();
+        domainIndependantAgentParameters = domainIndependentAgent;
+        sketchRecognitionAgent = domainIndependentAgent;
+        executor = Executors.newSingleThreadScheduledExecutor();
 
-	final BorderPane borderPane = new BorderPane();
-	final Group container = new Group();
+        final BorderPane borderPane = new BorderPane();
+        final Group container = new Group();
 
-//	borderPane.setCenter(container);
-	final Node parametersPanel = createParametersPanel();
-	borderPane.setRight(parametersPanel);
+        // borderPane.setCenter(container);
+        final Node parametersPanel = createParametersPanel();
+        borderPane.setRight(parametersPanel);
 
-	final Scene scene = new Scene(container);
+        final Scene scene = new Scene(container);
 
-	final SketchListener sketchListener = new SketchListener(scene,
-		container);
-	sketchListener.setOnSketchDone(new EventHandler<SketchEvent>() {
+        final SketchListener sketchListener = new SketchListener(scene, container);
+        sketchListener.setOnSketchDone(new EventHandler<SketchEvent>() {
 
-	    @SuppressWarnings("synthetic-access")
-	    @Override
-	    public void handle(final SketchEvent sketchEvent) {
-		executor.execute(new Runnable() {
-		    @Override
-		    public void run() {
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void handle(final SketchEvent sketchEvent) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
 
-			final RecognitionResult recognitionResult = sketchRecognitionAgent
-				.recognize(stroke(sketchEvent.getSketchPoints()));
+                        final RecognitionResult recognitionResult =
+                                sketchRecognitionAgent.recognize(stroke(sketchEvent.getSketchPoints()));
 
-			final Collection<Line> lines = recognitionResult
-				.lines();
-			final Collection<Circle> circles = recognitionResult
-				.circles();
-			Platform.runLater(new Runnable() {
-			    @Override
-			    public void run() {
-				sketchEvent.getSketchDrawing().setStroke(
-					Color.LIGHTGRAY);
+                        final Collection<Line> lines = recognitionResult.lines();
+                        final Collection<Circle> circles = recognitionResult.circles();
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                sketchEvent.getSketchDrawing().setStroke(Color.LIGHTGRAY);
 
-				for (final Line line : lines) {
-				    final javafx.scene.shape.Line lineFx = new javafx.scene.shape.Line(
-					    line.start().x(), line.start().y(),
-					    line.end().x(), line.end().y());
-				    lineFx.setStroke(Color.GREEN);
-				    container.getChildren().add(lineFx);
-				}
+                                for (final Line line : lines) {
+                                    final javafx.scene.shape.Line lineFx =
+                                            new javafx.scene.shape.Line(line.start().x(), line.start().y(),
+                                                                        line.end().x(), line.end().y());
+                                    lineFx.setStroke(Color.GREEN);
+                                    container.getChildren().add(lineFx);
+                                }
 
-				for (final Circle circle : circles) {
-				    final javafx.scene.shape.Circle circleFx = new javafx.scene.shape.Circle(
-					    circle.center().x(), circle
-						    .center().y(), circle
-						    .radius());
-				    circleFx.setFill(Color.TRANSPARENT);
-				    circleFx.setStroke(Color.GREEN);
-				    container.getChildren().add(circleFx);
-				}
+                                for (final Circle circle : circles) {
+                                    final javafx.scene.shape.Circle circleFx =
+                                            new javafx.scene.shape.Circle(circle.center().x(),
+                                                                          circle.center().y(), circle.radius());
+                                    circleFx.setFill(Color.TRANSPARENT);
+                                    circleFx.setStroke(Color.GREEN);
+                                    container.getChildren().add(circleFx);
+                                }
 
-			    }
-			});
-		    }
+                            }
+                        });
+                    }
 
-		});
-		sketchEvent.consume();
-	    }
-	});
+                });
+                sketchEvent.consume();
+            }
+        });
 
-	stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-	    @Override
-	    public void handle(final WindowEvent event) {
-		System.exit(0);
-	    }
-	});
-	stage.setScene(scene);
-	stage.centerOnScreen();
-	stage.setWidth(800);
-	stage.setHeight(600);
-	stage.toFront();
-	stage.setTitle("NCL Sketch Recognition Alpha Prototype");
-	stage.show();
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(final WindowEvent event) {
+                System.exit(0);
+            }
+        });
+        stage.setScene(scene);
+        stage.centerOnScreen();
+        stage.setWidth(800);
+        stage.setHeight(600);
+        stage.toFront();
+        stage.setTitle("NCL Sketch Recognition Alpha Prototype");
+        stage.show();
     }
 
     private Node createParametersPanel() {
-	final FlowPane flow = new FlowPane();
-	flow.setPadding(new Insets(5, 0, 5, 0));
-	flow.setVgap(4);
-	flow.setHgap(4);
-	flow.setPrefWrapLength(170); // preferred width allows for two columns
+        final FlowPane flow = new FlowPane();
+        flow.setPadding(new Insets(5, 0, 5, 0));
+        flow.setVgap(4);
+        flow.setHgap(4);
+        flow.setPrefWrapLength(170); // preferred width allows for two columns
 
-	// k parameter
-	final Slider kSlider = new Slider(1, 10,
-		domainIndependantAgentParameters.k());
-	kSlider.setBlockIncrement(1);
-	kSlider.setMajorTickUnit(1);
-	kSlider.setLabelFormatter(new StringConverter<Double>() {
-	    @Override
-	    public String toString(final Double n) {
-		if (n < 2)
-		    return "k";
+        // k parameter
+        final Slider kSlider = new Slider(1, 10, domainIndependantAgentParameters.k());
+        kSlider.setBlockIncrement(1);
+        kSlider.setMajorTickUnit(1);
+        kSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public Double fromString(final String arg0) {
+                return 0d;
+            }
 
-		return "";
-	    }
+            @Override
+            public String toString(final Double n) {
+                if (n < 2) {
+                    return "k";
+                }
 
-	    @Override
-	    public Double fromString(final String arg0) {
-		return 0d;
-	    }
-	});
-	kSlider.valueProperty().addListener(new ChangeListener<Number>() {
+                return "";
+            }
+        });
+        kSlider.valueProperty().addListener(new ChangeListener<Number>() {
 
-	    @Override
-	    public void changed(
-		    final ObservableValue<? extends Number> obsValue,
-		    final Number previousValue, final Number newValue) {
-		domainIndependantAgentParameters.k(newValue.intValue());
-	    }
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void changed(final ObservableValue<? extends Number> obsValue, final Number previousValue,
+                    final Number newValue) {
+                domainIndependantAgentParameters.k(newValue.intValue());
+            }
 
-	});
-	flow.getChildren().add(kSlider);
-	return flow;
+        });
+        flow.getChildren().add(kSlider);
+        return flow;
     }
 
     private Stroke stroke(final List<Point2D> sketchPoints) {
-	final Point[] result = new Point[sketchPoints.size()];
-	int i = 0;
-	for (final Point2D pt : sketchPoints) {
-	    result[i] = new Point() {
+        final Point[] result = new Point[sketchPoints.size()];
+        int i = 0;
+        for (final Point2D pt : sketchPoints) {
+            result[i] = new Point() {
 
-		@Override
-		public final double x() {
-		    return pt.getX();
-		}
+                @Override
+                public final String toString() {
+                    return "[" + x() + ", " + y() + "]";
+                }
 
-		@Override
-		public final double y() {
-		    return pt.getY();
-		}
+                @Override
+                public final double x() {
+                    return pt.getX();
+                }
 
-		@Override
-		public final String toString() {
-		    return "[" + x() + ", " + y() + "]";
-		}
-	    };
-	    i++;
-	}
+                @Override
+                public final double y() {
+                    return pt.getY();
+                }
+            };
+            i++;
+        }
 
-	return new Stroke(1.0, result);
+        return new Stroke(1.0, result);
     }
 
     public static void main(final String[] args) {
-	Application.launch(args);
+        Application.launch(args);
     }
 }
