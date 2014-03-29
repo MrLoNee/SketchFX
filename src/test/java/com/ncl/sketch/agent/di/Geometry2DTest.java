@@ -7,22 +7,10 @@ import org.junit.Test;
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
-import com.ncl.sketch.agent.api.Stroke;
 
 public final class Geometry2DTest {
 
     private static final double DELTA = 0.00001;
-
-    @Test
-    public final void circle() {
-        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
-        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
-        final Stroke stroke = GeometricElements.stroke(x, y);
-        final Circle circle = Geometry2D.circle(stroke);
-        assertEquals(101.5, circle.center().x(), DELTA);
-        assertEquals(101.5, circle.center().y(), DELTA);
-        assertEquals(1.581138, circle.radius(), DELTA);
-    }
 
     @Test
     public final void circleArea() {
@@ -35,7 +23,7 @@ public final class Geometry2DTest {
         final Point p1 = GeometricElements.point(154, 15);
         final Point p2 = GeometricElements.point(-15, 45);
         final Point p3 = GeometricElements.point(54, 145);
-        final Circle circumcircle = Geometry2D.circumcircle(p1, p2, p3);
+        final Circle circumcircle = Geometry2D.circumcircleOf(p1, p2, p3);
         final Point circumcenter = circumcircle.center();
         assertEquals(74.32340, circumcenter.x(), DELTA);
         assertEquals(57.17185, circumcenter.y(), DELTA);
@@ -57,6 +45,24 @@ public final class Geometry2DTest {
         final Point end = GeometricElements.point(154, 89.45);
         final Line line = new Line(start, end);
         assertEquals(183.74515639, Geometry2D.lengthOf(line), DELTA);
+    }
+
+    @Test
+    public final void lineEquationOf() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(8, 3);
+        final double[] pb = Geometry2D.lineEquationOf(p1, p2);
+        assertEquals(-1.0 / 3.0, pb[0], DELTA);
+        assertEquals(5.666666666, pb[1], DELTA);
+    }
+
+    @Test
+    public final void perpendicularBisectorOf() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(8, 3);
+        final double[] pb = Geometry2D.perpendicularBisectorOf(p1, p2);
+        assertEquals(3, pb[0], DELTA);
+        assertEquals(-11, pb[1], DELTA);
     }
 
     @Test

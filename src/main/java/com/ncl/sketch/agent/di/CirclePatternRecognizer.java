@@ -72,7 +72,7 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
         final boolean fitsCircle = fitsCircle(stroke);
         final boolean isCircle;
         if (fitsCircle) {
-            final Circle candidate = Geometry2D.circle(stroke);
+            final Circle candidate = Strokes.circle(stroke);
             final double featureArea = Strokes.featureArea(stroke, candidate.center());
             final double candidateArea = Geometry2D.areaOf(candidate);
             final double areaError = error(featureArea, candidateArea);

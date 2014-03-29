@@ -1,5 +1,6 @@
 package com.ncl.sketch.agent.di;
 
+import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
@@ -18,6 +19,42 @@ final class Strokes {
 
     private Strokes() {
         // empty;
+    }
+
+    /**
+     * Returns a new {@link Circle circle} which takes the center of the stroke's bounding box as its own center
+     * and the mean distance between the center and each stroke point as its radius.
+     * 
+     * @param stroke the {@link Stroke stroke}
+     * @return a new {@link Circle circle} which takes the center of the stroke's bounding box as its own center
+     *         and the mean distance between the center and each stroke point as its radius
+     */
+    static final Circle circle(final Stroke stroke) {
+        double maxX = Double.MIN_VALUE;
+        double minX = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE;
+
+        final int size = stroke.size();
+        for (int i = 0; i < size; i++) {
+            final Point point = stroke.get(i);
+            maxX = Math.max(point.x(), maxX);
+            minX = Math.min(point.x(), minX);
+            maxY = Math.max(point.y(), maxY);
+            minY = Math.min(point.y(), minY);
+        }
+
+        final double x = (maxX - minX) / 2 + minX;
+        final double y = (maxY - minY) / 2 + minY;
+        final Point centre = Geometry2D.point(x, y);
+
+        double radius = 0.0;
+        for (int i = 0; i < size; i++) {
+            radius += Geometry2D.distance(centre, stroke.get(i));
+        }
+        radius = radius / size;
+
+        return new Circle(centre, radius);
     }
 
     /**
@@ -40,9 +77,9 @@ final class Strokes {
             final double direction = direction(stroke, i);
             if (i > 0) {
                 /* increase/decrease shift on discontinuity. */
-                if ((previousDirection - direction) > DIRECTION_DISCONTINUITY_THRESHOLD) {
+                if (previousDirection - direction > DIRECTION_DISCONTINUITY_THRESHOLD) {
                     shift++;
-                } else if ((previousDirection - direction) < -DIRECTION_DISCONTINUITY_THRESHOLD) {
+                } else if (previousDirection - direction < -DIRECTION_DISCONTINUITY_THRESHOLD) {
                     shift--;
                 }
             }

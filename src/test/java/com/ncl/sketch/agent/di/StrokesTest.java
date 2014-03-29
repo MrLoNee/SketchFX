@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
@@ -12,10 +13,15 @@ public final class StrokesTest {
 
     private static final double DELTA = 0.00001;
 
-    private static Stroke stroke() {
-        final double[] x = { 0, 0, 2.5, 5, 5 };
-        final double[] y = { 0, 5, 7.5, 5, 0 };
-        return GeometricElements.stroke(x, y);
+    @Test
+    public final void circle() {
+        final double[] x = { 101, 102, 103, 103, 102, 101, 100, 100 };
+        final double[] y = { 100, 100, 101, 102, 103, 103, 102, 101 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final Circle circle = Strokes.circle(stroke);
+        assertEquals(101.5, circle.center().x(), DELTA);
+        assertEquals(101.5, circle.center().y(), DELTA);
+        assertEquals(1.581138, circle.radius(), DELTA);
     }
 
     @Test
@@ -208,5 +214,11 @@ public final class StrokesTest {
         final double[] y = { 0, 5, 7.5 };
         final Stroke stroke = GeometricElements.stroke(x, y);
         assertEquals(1, Strokes.indexOfMaxCurvature(stroke, 2));
+    }
+
+    private static Stroke stroke() {
+        final double[] x = { 0, 0, 2.5, 5, 5 };
+        final double[] y = { 0, 5, 7.5, 5, 0 };
+        return GeometricElements.stroke(x, y);
     }
 }

@@ -3,7 +3,6 @@ package com.ncl.sketch.agent.di;
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
-import com.ncl.sketch.agent.api.Stroke;
 
 /**
  * Helper functions pertaining to geometric calculations on {@link Point 2D point}s.
@@ -71,42 +70,6 @@ final class Geometry2D {
     }
 
     /**
-     * Returns a new {@link Circle circle} which takes the center of the stroke�s bounding box as its own center
-     * and the mean distance between the center and each stroke point as its radius.
-     * 
-     * @param stroke the {@link Stroke stroke}
-     * @return a new {@link Circle circle} which takes the center of the stroke�s bounding box as its own center
-     *         and the mean distance between the center and each stroke point as its radius
-     */
-    static final Circle circle(final Stroke stroke) {
-        double maxX = Double.MIN_VALUE;
-        double minX = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE;
-
-        final int size = stroke.size();
-        for (int i = 0; i < size; i++) {
-            final Point point = stroke.get(i);
-            maxX = Math.max(point.x(), maxX);
-            minX = Math.min(point.x(), minX);
-            maxY = Math.max(point.y(), maxY);
-            minY = Math.min(point.y(), minY);
-        }
-
-        final double x = (maxX - minX) / 2 + minX;
-        final double y = (maxY - minY) / 2 + minY;
-        final Point centre = point(x, y);
-
-        double radius = 0.0;
-        for (int i = 0; i < size; i++) {
-            radius += distance(centre, stroke.get(i));
-        }
-        radius = radius / size;
-
-        return new Circle(centre, radius);
-    }
-
-    /**
      * Returns the circumcircle of the triangle defined by the three specified {@link Point point}s: the
      * {@link Circle circle} which passes through all three point and whose center is equidistant from all three
      * {@link Point point}s.
@@ -117,12 +80,9 @@ final class Geometry2D {
      * 
      * @return the circumcircle of the triangle defined by the three specified {@link Point point}s
      */
-    static final Circle circumcircle(final Point p1, final Point p2, final Point p3) {
-        final double[] p1p2 = vector(p1, p2);
-        final double[] p2p3 = vector(p2, p3);
-
-        final double slope12 = y(p1p2) / x(p1p2);
-        final double slope23 = y(p2p3) / x(p2p3);
+    static final Circle circumcircleOf(final Point p1, final Point p2, final Point p3) {
+        final double slope12 = slope(p1, p2);
+        final double slope23 = slope(p2, p3);
 
         final double centerX =
                 (slope12 * slope23 * (p1.y() - p3.y()) + slope23 * (p1.x() + p2.x()) - slope12 * (p2.x() + p3.x()))
@@ -156,76 +116,58 @@ final class Geometry2D {
     }
 
     /**
-     * Orthogonally projects the specified {@link Point point} on the specified {@link Line line}.
+     * Returns [m, b] such that <i>y = m * x + b</i> for both specified {@link Point point}s.
      * 
-     * @param point the point to projected
-     * @param line the line on which the point shall be orthogonally projected
-     * @return a new {@link Point point} that is the result of the orthogonal projection of the specified point on
-     *         the specified line
+     * @param p1 first point of the line
+     * @param p2 second point of the line
+     * @return [m, b] such that <i>y = m * x + b</i> for both specified {@link Point point}s
      */
-    static final Point project(final Point point, final Line line) {
-        final Point start = line.start();
-        final double[] a = vector(start, point);
-        final double[] b = vector(start, line.end());
-        final double scale = dotProductOf(a, b) / dotProductOf(b, b);
-        final double[] a1 = scale(scale, b);
-        final double x = x(a1) + start.x();
-        final double y = y(a1) + start.y();
-        return point(x, y);
+    static final double[] lineEquationOf(final Point p1, final Point p2) {
+        final double m = slope(p1, p2);
+        final double[] midPoint = midPoint(p1, p2);
+
+        /*
+         * y = m * x + b -> b = y - m * x
+         */
+        final double b = midPoint[1] - m * midPoint[0];
+
+        return new double[] { m, b };
     }
 
-    private static double[] add(final double[] v1, final double[] v2) {
-        return new double[] { x(v1) + x(v2), y(v1) + y(v2) };
-    }
-
-    private static double dotProductOf(final double[] v1, final double[] v2) {
-        return x(v1) * x(v2) + y(v1) * y(v2);
-    }
-
-    private static double exteriorProductOf(final double[] v1, final double[] v2) {
-        return x(v1) * y(v2) - x(v2) * y(v1);
-    }
-
-    /*
-     * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null otherwise.
+    /**
+     * Returns the parameters of the perpendicular bisector of the two specified {@link Point point}s. The result
+     * is an array containing <i>m</i> as first element and <i>b</i> as second element. The equation of the
+     * perpendicular bisector being <i>y = m*x + b</i>.
+     * 
+     * @param p1 first point
+     * @param p2 second point
+     * @return the parameters of the perpendicular bisector of the two specified {@link Point point}s
      */
-    private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
-        final double[] p = vector(a);
-        final double[] r = vector(a, b);
-        final double[] q = vector(c);
-        final double[] s = vector(c, d);
-        final double[] qp = subtract(q, p);
-        final double rs = exteriorProductOf(r, s);
-        final double qpr = exteriorProductOf(qp, r);
-        final double[] result;
-        if (isZero(qpr) && isZero(rs)) {
-            // collinear
-            result = new double[] {};
-        } else if (isZero(rs)) {
-            // parrallel
-            result = null;
-        } else {
-            final double t = exteriorProductOf(qp, s) / rs;
-            final double u = qpr / rs;
-            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-                result = add(p, scale(t, r));
-            } else {
-                // intersection outside lines
-                result = null;
-            }
-        }
-        return result;
+    static final double[] perpendicularBisectorOf(final Point p1, final Point p2) {
+        final double slope = slope(p1, p2);
+        /*
+         * slope of perpendicular bisector is the negative reciprocal of the slope of the two points.
+         */
+        final double m = -1 / slope;
+
+        final double[] midPoint = midPoint(p1, p2);
+
+        /*
+         * y = m * x + b -> b = y - m * x
+         */
+        final double b = midPoint[1] - m * midPoint[0];
+
+        return new double[] { m, b };
     }
 
-    private static boolean isZero(final double val) {
-        return Math.abs(val) < ZERO;
-    }
-
-    private static double norm(final double[] v) {
-        return Math.sqrt(x(v) * x(v) + y(v) * y(v));
-    }
-
-    private static Point point(final double x, final double y) {
+    /**
+     * Returns a new {@link Point point} with the specified coordinates.
+     * 
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return a new {@link Point point} with the specified coordinates
+     */
+    static Point point(final double x, final double y) {
         return new Point() {
 
             @Override
@@ -245,6 +187,78 @@ final class Geometry2D {
         };
     }
 
+    /**
+     * Orthogonally projects the specified {@link Point point} on the specified {@link Line line}.
+     * 
+     * @param point the point to projected
+     * @param line the line on which the point shall be orthogonally projected
+     * @return a new {@link Point point} that is the result of the orthogonal projection of the specified point on
+     *         the specified line
+     */
+    static final Point project(final Point point, final Line line) {
+        final Point start = line.start();
+        final double[] a = vector(start, point);
+        final double[] b = vector(start, line.end());
+        final double scale = dotProductOf(a, b) / dotProductOf(b, b);
+        final double[] a1 = scale(scale, b);
+        final double x = x(a1) + start.x();
+        final double y = y(a1) + start.y();
+        return point(x, y);
+    }
+
+    private static double dotProductOf(final double[] v1, final double[] v2) {
+        return x(v1) * x(v2) + y(v1) * y(v2);
+    }
+
+    private static double exteriorProductOf(final double[] v1, final double[] v2) {
+        return x(v1) * y(v2) - x(v2) * y(v1);
+    }
+
+    /*
+     * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null otherwise.
+     */
+    private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
+        final double[] eq1 = lineEquationOf(a, b);
+        final double[] eq2 = lineEquationOf(c, d);
+        final double m1 = eq1[0];
+        final double m2 = eq2[0];
+        final double b1 = eq1[1];
+        final double b2 = eq2[1];
+
+        final double[] result;
+        if (isZero(b1 - b2) && isZero(m1 - m2)) {
+            // collinear
+            result = new double[] {};
+        } else if (isZero(m1 - m2)) {
+            // parrallel
+            result = null;
+        } else {
+            final double x = (b2 - b1) / (m1 - m2);
+            final double y = m1 * x + b1;
+            if (withinRange(x, y, a, b) && withinRange(x, y, c, d)) {
+                result = new double[] { x, y };
+            } else {
+                // intersection outside lines
+                result = null;
+            }
+        }
+        return result;
+    }
+
+    private static boolean isZero(final double val) {
+        return Math.abs(val) < ZERO;
+    }
+
+    private static double[] midPoint(final Point p1, final Point p2) {
+        final double midX = (p1.x() + p2.x()) / 2;
+        final double midY = (p1.y() + p2.y()) / 2;
+        return new double[] { midX, midY };
+    }
+
+    private static double norm(final double[] v) {
+        return Math.sqrt(x(v) * x(v) + y(v) * y(v));
+    }
+
     private static double[] scale(final double scale, final double[] v) {
         return new double[] { scale * x(v), scale * y(v) };
     }
@@ -255,18 +269,24 @@ final class Geometry2D {
         return 0.5 * exteriorProductOf(v1, v2);
     }
 
-    private static double[] subtract(final double[] v1, final double[] v2) {
-        return new double[] { x(v1) - x(v2), y(v1) - y(v2) };
-    }
-
-    // vector from origin (0,0) to point.
-    private static double[] vector(final Point pt) {
-        return new double[] { pt.x(), pt.y() };
+    /*
+     * slope of line (p1, p2)
+     */
+    private static double slope(final Point p1, final Point p2) {
+        return (p2.y() - p1.y()) / (p2.x() - p1.x());
     }
 
     // vector from "from" to "to".
     private static double[] vector(final Point from, final Point to) {
         return new double[] { to.x() - from.x(), to.y() - from.y() };
+    }
+
+    private static boolean withinRange(final double x, final double y, final Point from, final Point to) {
+        final double maxX = Math.max(from.x(), to.x());
+        final double minX = Math.min(from.x(), to.x());
+        final double maxY = Math.max(from.y(), to.y());
+        final double minY = Math.min(from.y(), to.y());
+        return x > minX && x < maxX && y > minY && y < maxY;
     }
 
     private static double x(final double[] v) {
