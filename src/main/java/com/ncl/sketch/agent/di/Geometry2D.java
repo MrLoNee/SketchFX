@@ -49,7 +49,7 @@ final class Geometry2D {
      */
     static final double areaOf(final Point a, final Point b, final Point c, final Point d) {
         final double area;
-        final double[] intersection = intersection(a, d, c, b);
+        final double[] intersection = intersectionOf(a, d, c, b);
         if (intersection == null) {
             /*
              * Simple quadrilateral. Add the two areas. If quadrilateral is concave this will also work.
@@ -103,6 +103,38 @@ final class Geometry2D {
      */
     static final double distance(final Point from, final Point to) {
         return norm(vector(from, to));
+    }
+
+    /**
+     * Returns the intersection {@link Point point} of the two lines defined by their parametric equations: <i>y =
+     * m * x + b</i>. Each line shall by specified as an array with two values: <i>[m, b]</i>.
+     * 
+     * @param line1 the equation of the first line
+     * @param line2 the equation of the second line
+     * @return the intersection {@link Point point} of the two lines or <code>null</code> if the two lines are
+     *         parallels
+     * @throws CoincidentLineException if the two lines are coincident
+     */
+    static final Point intersectionOf(final double[] line1, final double[] line2) throws CoincidentLineException {
+        final double m1 = line1[0];
+        final double m2 = line2[0];
+        final double b1 = line1[1];
+        final double b2 = line2[1];
+
+        final Point result;
+        if (isZero(b1 - b2) && isZero(m1 - m2)) {
+            // coincident lines
+            throw new CoincidentLineException();
+        }
+        if (isZero(m1 - m2)) {
+            // parallel
+            result = null;
+        } else {
+            final double x = (b2 - b1) / (m1 - m2);
+            final double y = m1 * x + b1;
+            result = point(x, y);
+        }
+        return result;
     }
 
     /**
@@ -206,6 +238,24 @@ final class Geometry2D {
         return point(x, y);
     }
 
+    /**
+     * Returns <code>true</code> iff the specified {@link Point point} is on the segment of line between
+     * <i>from</i> and <i>to</i>.
+     * 
+     * @param pt the {@link Point point} to test
+     * @param from the first point of the line segment
+     * @param to the first point of the line segment
+     * @return <code>true</code> iff the specified {@link Point point} is on the segment of line between
+     *         <i>from</i> and <i>to</i>
+     */
+    static final boolean withinRange(final Point pt, final Point from, final Point to) {
+        final double maxX = Math.max(from.x(), to.x());
+        final double minX = Math.min(from.x(), to.x());
+        final double maxY = Math.max(from.y(), to.y());
+        final double minY = Math.min(from.y(), to.y());
+        return pt.x() > minX && pt.x() < maxX && pt.y() > minY && pt.y() < maxY;
+    }
+
     private static double dotProductOf(final double[] v1, final double[] v2) {
         return x(v1) * x(v2) + y(v1) * y(v2);
     }
@@ -217,30 +267,25 @@ final class Geometry2D {
     /*
      * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null otherwise.
      */
-    private static double[] intersection(final Point a, final Point b, final Point c, final Point d) {
+    private static double[] intersectionOf(final Point a, final Point b, final Point c, final Point d) {
         final double[] eq1 = lineEquationOf(a, b);
         final double[] eq2 = lineEquationOf(c, d);
-        final double m1 = eq1[0];
-        final double m2 = eq2[0];
-        final double b1 = eq1[1];
-        final double b2 = eq2[1];
-
-        final double[] result;
-        if (isZero(b1 - b2) && isZero(m1 - m2)) {
-            // collinear
-            result = new double[] {};
-        } else if (isZero(m1 - m2)) {
-            // parrallel
-            result = null;
-        } else {
-            final double x = (b2 - b1) / (m1 - m2);
-            final double y = m1 * x + b1;
-            if (withinRange(x, y, a, b) && withinRange(x, y, c, d)) {
-                result = new double[] { x, y };
-            } else {
-                // intersection outside lines
+        double[] result;
+        try {
+            final Point i = intersectionOf(eq1, eq2);
+            if (i == null) {
+                // parallel
                 result = null;
+            } else {
+                if (withinRange(i, a, b) && withinRange(i, c, d)) {
+                    result = new double[] { i.x(), i.y() };
+                } else {
+                    // intersection outside lines
+                    result = null;
+                }
             }
+        } catch (final CoincidentLineException e) {
+            result = new double[] {};
         }
         return result;
     }
@@ -279,14 +324,6 @@ final class Geometry2D {
     // vector from "from" to "to".
     private static double[] vector(final Point from, final Point to) {
         return new double[] { to.x() - from.x(), to.y() - from.y() };
-    }
-
-    private static boolean withinRange(final double x, final double y, final Point from, final Point to) {
-        final double maxX = Math.max(from.x(), to.x());
-        final double minX = Math.min(from.x(), to.x());
-        final double maxY = Math.max(from.y(), to.y());
-        final double minY = Math.min(from.y(), to.y());
-        return x > minX && x < maxX && y > minY && y < maxY;
     }
 
     private static double x(final double[] v) {

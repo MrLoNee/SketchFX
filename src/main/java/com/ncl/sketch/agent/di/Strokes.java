@@ -21,6 +21,33 @@ final class Strokes {
         // empty;
     }
 
+//    static final void arc(final Stroke stroke) {
+//        final Point first = stroke.get(0);
+//        final Point last = stroke.get(stroke.size() - 1);
+//        final double[] bisector = Geometry2D.perpendicularBisectorOf(first, last);
+//        Point intersection = null;
+//        for (int i = 0; i < stroke.size() - 1; i++) {
+//            final Point from = stroke.get(i);
+//            final Point to = stroke.get(i + 1);
+//            final double[] line1 = Geometry2D.lineEquationOf(from, to);
+//            try {
+//                intersection = Geometry2D.intersectionOf(line1, bisector);
+//                if (intersection != null && Geometry2D.withinRange(intersection, from, to)) {
+//                    break;
+//                }
+//            } catch (final CoincidentLineException e) {
+//                // ignore and move to next stroke segment
+//            }
+//        }
+//
+//        if (intersection == null) {
+//            // no intersection found, return null
+//        } else {
+//            final Circle circle = Geometry2D.circumcircleOf(first, intersection, last);
+//        }
+//
+//    }
+
     /**
      * Returns a new {@link Circle circle} which takes the center of the stroke's bounding box as its own center
      * and the mean distance between the center and each stroke point as its radius.

@@ -1,6 +1,9 @@
 package com.ncl.sketch.agent.di;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -37,6 +40,29 @@ public final class Geometry2DTest {
         final Point from = GeometricElements.point(5.6, -18.9);
         final Point to = GeometricElements.point(154, 89.45);
         assertEquals(183.74515639, Geometry2D.distance(from, to), DELTA);
+    }
+
+    @Test
+    public final void intersectionOf() throws CoincidentLineException {
+        final double[] line1 = { 1, 3 };
+        final double[] line2 = { -2, 12 };
+        final Point i = Geometry2D.intersectionOf(line1, line2);
+        assertEquals(3, i.x(), DELTA);
+        assertEquals(6, i.y(), DELTA);
+    }
+
+    @Test(expected = CoincidentLineException.class)
+    public final void intersectionOfCoincident() throws CoincidentLineException {
+        final double[] line1 = { 1, 3 };
+        final double[] line2 = { 1.00000009, 3.0000009 };
+        Geometry2D.intersectionOf(line1, line2);
+    }
+
+    @Test
+    public final void intersectionOfParallel() throws CoincidentLineException {
+        final double[] line1 = { 1, 3 };
+        final double[] line2 = { 1, 4 };
+        assertNull(Geometry2D.intersectionOf(line1, line2));
     }
 
     @Test
@@ -122,6 +148,46 @@ public final class Geometry2DTest {
         final Point b = GeometricElements.point(154, 89.45);
         final Point c = GeometricElements.point(36.8, -28.75);
         assertEquals(2421.13, Geometry2D.areaOf(a, b, c), DELTA);
+    }
+
+    @Test
+    public final void withinRange() {
+        final Point pt = GeometricElements.point(3, 6);
+        final Point from = GeometricElements.point(2, 5);
+        final Point to = GeometricElements.point(4, 7);
+        assertTrue(Geometry2D.withinRange(pt, from, to));
+    }
+
+    @Test
+    public final void withinRangeAboveX() {
+        final Point pt = GeometricElements.point(5, 6);
+        final Point from = GeometricElements.point(2, 5);
+        final Point to = GeometricElements.point(4, 7);
+        assertFalse(Geometry2D.withinRange(pt, from, to));
+    }
+
+    @Test
+    public final void withinRangeAboveY() {
+        final Point pt = GeometricElements.point(3, 4);
+        final Point from = GeometricElements.point(2, 5);
+        final Point to = GeometricElements.point(4, 7);
+        assertFalse(Geometry2D.withinRange(pt, from, to));
+    }
+
+    @Test
+    public final void withinRangeBelowX() {
+        final Point pt = GeometricElements.point(1, 6);
+        final Point from = GeometricElements.point(2, 5);
+        final Point to = GeometricElements.point(4, 7);
+        assertFalse(Geometry2D.withinRange(pt, from, to));
+    }
+
+    @Test
+    public final void withinRangeBelowY() {
+        final Point pt = GeometricElements.point(3, 8);
+        final Point from = GeometricElements.point(2, 5);
+        final Point to = GeometricElements.point(4, 7);
+        assertFalse(Geometry2D.withinRange(pt, from, to));
     }
 
 }
