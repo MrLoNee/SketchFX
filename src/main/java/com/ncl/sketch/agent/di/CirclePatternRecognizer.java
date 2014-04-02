@@ -4,11 +4,12 @@ import java.util.logging.Logger;
 
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.api.CircleRecognitionParameters;
 
 /**
  * A specialized {@link PatternRecognizer} that recognizes circles.
  */
-final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternRecognizerParameters {
+final class CirclePatternRecognizer implements PatternRecognizer, CircleRecognitionParameters {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 
@@ -18,13 +19,13 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
 
     private double minCorrelation;
 
-    private final double maxAreaError;
+    private double maxAreaError;
 
     private double maxSlopeError;
 
     /**
      * Constructor.
-     * 
+     *
      * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess the fit of the
      *            computed regression line derived from the direction graph of the stroke. The higher the value the
      *            more restrictive the fit will be
@@ -42,16 +43,7 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
     }
 
     @Override
-    public final double getMaxAreaRatio() {
-        /*
-         * FIXME : Parameter interface shall be fully split between circle and line as there is nothing in common -
-         * even the minimum correlation has a different meaning.
-         */
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final double getMinCorrelation() {
+    public final double minCorrelation() {
         return minCorrelation;
     }
 
@@ -61,10 +53,28 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
     }
 
     @Override
-    public final CirclePatternRecognizerParameters maxSlopeError(final double maxSlopeErrorVal) {
+    public final CircleRecognitionParameters maxSlopeError(final double maxSlopeErrorVal) {
         maxSlopeError = maxSlopeErrorVal;
         return this;
     }
+
+    @Override
+    public final CircleRecognitionParameters minCorrelation(final double minCorrelationVal) {
+        minCorrelation = minCorrelationVal;
+        return this;
+    }
+
+    @Override
+    public CircleRecognitionParameters maxAreaError(final double maxAreaError) {
+	this.maxAreaError = maxAreaError;
+	return this;
+    }
+
+    @Override
+    public double maxAreaError() {
+	return maxAreaError;
+    }
+
 
     @Override
     public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {
@@ -93,21 +103,6 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
         return isCircle;
     }
 
-    @Override
-    public final DefaultPatternRecognizerParameters setMaxAreaRatio(final double maxAreaRatioVal) {
-        /*
-         * FIXME : Parameter interface shall be fully split between circle and line as there is nothing in common -
-         * even the minimum correlation has a different meaning.
-         */
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final DefaultPatternRecognizerParameters setMinCorrelation(final double minCorrelationVal) {
-        minCorrelation = minCorrelationVal;
-        return this;
-    }
-
     private boolean fitsCircle(final Stroke stroke) {
         final int strokeSize = stroke.size();
         final double[] directionGraph = Strokes.directionGraph(stroke);
@@ -125,4 +120,5 @@ final class CirclePatternRecognizer implements PatternRecognizer, CirclePatternR
     private static double error(final double actual, final double expected) {
         return Math.abs(actual - expected) / expected;
     }
+
 }

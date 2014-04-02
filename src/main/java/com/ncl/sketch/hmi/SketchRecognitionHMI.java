@@ -29,14 +29,14 @@ import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
-import com.ncl.sketch.agent.di.DomainIndependantAgentParameters;
 import com.ncl.sketch.agent.di.DomainIndependentAgent;
+import com.ncl.sketch.agent.di.api.DomainIndependentAgentParameters;
 
 public class SketchRecognitionHMI extends Application {
 
     private SketchRecognitionAgent sketchRecognitionAgent;
 
-    private DomainIndependantAgentParameters domainIndependantAgentParameters;
+    private DomainIndependentAgentParameters domainIndependantAgentParameters;
 
     private ScheduledExecutorService executor;
 
