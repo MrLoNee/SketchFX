@@ -5,9 +5,9 @@ import java.util.List;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 
@@ -24,9 +24,9 @@ final class SketchListener implements EventHandler<MouseEvent> {
 
     private final List<EventHandler<SketchEvent>> listeners;
 
-    private final Group container;
+    private final Pane container;
 
-    SketchListener(final Scene scene, final Group aContainer) {
+    SketchListener(final Scene scene, final Pane aContainer) {
         sketch = new ArrayList<>();
         listeners = new ArrayList<>();
 
@@ -68,7 +68,7 @@ final class SketchListener implements EventHandler<MouseEvent> {
         }
     }
 
-    final void setOnSketchDone(final EventHandler<SketchEvent> handler) {
+    final void onSketchDone(final EventHandler<SketchEvent> handler) {
         listeners.add(handler);
     }
 

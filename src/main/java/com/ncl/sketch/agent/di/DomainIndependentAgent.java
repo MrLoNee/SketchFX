@@ -6,7 +6,7 @@ import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
 import com.ncl.sketch.agent.di.api.CircleRecognitionParameters;
-import com.ncl.sketch.agent.di.api.DomainIndependentAgentParameters;
+import com.ncl.sketch.agent.di.api.IDomainIndependentAgent;
 import com.ncl.sketch.agent.di.api.LineRecognitionParameters;
 
 /**
@@ -17,8 +17,7 @@ import com.ncl.sketch.agent.di.api.LineRecognitionParameters;
  *      href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.3800&amp;rep=rep1&amp;type=pdf">A
  *      Domain-Independent System for Sketch Recognition</a>
  */
-public final class DomainIndependentAgent implements SketchRecognitionAgent,
-	DomainIndependentAgentParameters {
+public final class DomainIndependentAgent implements IDomainIndependentAgent {
 
     private static final Logger LOGGER = Logger.getLogger("DI-Agent");
 

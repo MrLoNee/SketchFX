@@ -1,0 +1,4 @@
+/**
+ * This package contains the api of a domain-independent sketch recognition agent based on the paper "A Domain-Independent System for Sketch Recognition".
+ */
+package com.ncl.sketch.agent.di.api;
