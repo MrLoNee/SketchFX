@@ -1,6 +1,5 @@
 package com.ncl.sketch.agent.di.api;
 
-
 /**
  * The Domain independent agent parameters.
  */
