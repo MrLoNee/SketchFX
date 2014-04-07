@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;

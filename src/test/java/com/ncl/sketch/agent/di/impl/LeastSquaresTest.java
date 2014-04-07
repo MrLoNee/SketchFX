@@ -1,8 +1,11 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import com.ncl.sketch.agent.di.impl.LeastSquares;
+import com.ncl.sketch.agent.di.impl.RegressionLine;
 
 public class LeastSquaresTest {
 

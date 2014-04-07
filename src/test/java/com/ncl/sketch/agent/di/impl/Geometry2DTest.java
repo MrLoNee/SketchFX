@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,6 +10,9 @@ import org.junit.Test;
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
+import com.ncl.sketch.agent.di.impl.CoincidentLineException;
+import com.ncl.sketch.agent.di.impl.Geometry2D;
+import com.ncl.sketch.agent.di.impl.LineEquation;
 
 public final class Geometry2DTest {
 

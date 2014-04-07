@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import com.ncl.sketch.agent.api.Stroke;
 

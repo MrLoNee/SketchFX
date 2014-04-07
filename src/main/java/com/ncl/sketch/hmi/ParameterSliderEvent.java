@@ -4,9 +4,7 @@ import javafx.event.Event;
 import javafx.event.EventType;
 
 public class ParameterSliderEvent extends Event {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -420434395517757301L;
 
     /** The Parameter slider Event type. */
@@ -14,15 +12,9 @@ public class ParameterSliderEvent extends Event {
 
     private final double newValue;
 
-    /**
-     * Constructor.
-     *
-     * @param sketchPointsVal The Sketch points list
-     * @param sketchDrawingVal the Sketch displayed polyline
-     */
-    ParameterSliderEvent(final double newValue) {
+    ParameterSliderEvent(final double aNewValue) {
         super(EVENT_TYPE);
-        this.newValue = newValue;
+        this.newValue = aNewValue;
     }
 
     double newValue() {

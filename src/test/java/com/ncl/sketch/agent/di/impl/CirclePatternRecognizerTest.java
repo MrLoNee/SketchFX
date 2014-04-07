@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.impl.CirclePatternRecognizer;
+import com.ncl.sketch.agent.di.impl.StrokeRecognitionResult;
 
 public final class CirclePatternRecognizerTest {
 

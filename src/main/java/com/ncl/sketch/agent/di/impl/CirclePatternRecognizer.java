@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import java.util.logging.Logger;
 
@@ -25,7 +25,7 @@ final class CirclePatternRecognizer implements PatternRecognizer, CircleRecognit
 
     /**
      * Constructor.
-     *
+     * 
      * @param minimumCorrelation a {@code double} in range <i>0.0</i> to <i>1.0</i> used to assess the fit of the
      *            computed regression line derived from the direction graph of the stroke. The higher the value the
      *            more restrictive the fit will be
@@ -43,8 +43,14 @@ final class CirclePatternRecognizer implements PatternRecognizer, CircleRecognit
     }
 
     @Override
-    public final double minCorrelation() {
-        return minCorrelation;
+    public final double maxAreaError() {
+        return maxAreaError;
+    }
+
+    @Override
+    public final CircleRecognitionParameters maxAreaError(final double maxAreaErrorVal) {
+        maxAreaError = maxAreaErrorVal;
+        return this;
     }
 
     @Override
@@ -59,22 +65,15 @@ final class CirclePatternRecognizer implements PatternRecognizer, CircleRecognit
     }
 
     @Override
+    public final double minCorrelation() {
+        return minCorrelation;
+    }
+
+    @Override
     public final CircleRecognitionParameters minCorrelation(final double minCorrelationVal) {
         minCorrelation = minCorrelationVal;
         return this;
     }
-
-    @Override
-    public CircleRecognitionParameters maxAreaError(final double maxAreaError) {
-	this.maxAreaError = maxAreaError;
-	return this;
-    }
-
-    @Override
-    public double maxAreaError() {
-	return maxAreaError;
-    }
-
 
     @Override
     public final boolean recognize(final Stroke stroke, final StrokeRecognitionResult result) {

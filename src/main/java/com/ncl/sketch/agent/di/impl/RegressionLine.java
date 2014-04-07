@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 /**
  * A line defined as <i>y = a + b * x</i>. The parameters <i>a</i> and <i>b</i> parameters are the result of a

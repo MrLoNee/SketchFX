@@ -24,17 +24,17 @@ import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.Stroke;
-import com.ncl.sketch.agent.di.DomainIndependentAgent;
+import com.ncl.sketch.agent.di.impl.DomainIndependentAgentImpl;
 
 public class SketchRecognitionHMI extends Application {
 
-    private DomainIndependentAgent domainIndependentAgent;
+    private DomainIndependentAgentImpl domainIndependentAgent;
 
     private ScheduledExecutorService executor;
 
     @Override
     public void start(final Stage stage) throws Exception {
-        domainIndependentAgent = new DomainIndependentAgent();
+        domainIndependentAgent = new DomainIndependentAgentImpl();
         executor = Executors.newSingleThreadScheduledExecutor();
 
         final BorderPane borderPane = new BorderPane();
@@ -111,6 +111,7 @@ public class SketchRecognitionHMI extends Application {
         stage.show();
     }
 
+    @SuppressWarnings("synthetic-access")
     private Node createParametersPanel() {
         final VBox box = new VBox();
         box.setPadding(new Insets(5, 0, 5, 0));
@@ -122,7 +123,7 @@ public class SketchRecognitionHMI extends Application {
         kParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
             @Override
             public void handle(final ParameterSliderEvent event) {
-                domainIndependentAgent.k((int) (event.newValue()));
+                domainIndependentAgent.k((int) event.newValue());
             }
         });
         box.getChildren().add(kParamSlider);

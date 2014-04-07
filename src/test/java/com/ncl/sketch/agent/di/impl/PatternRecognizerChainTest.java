@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -8,6 +8,9 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.impl.PatternRecognizer;
+import com.ncl.sketch.agent.di.impl.PatternRecognizerChain;
+import com.ncl.sketch.agent.di.impl.StrokeRecognitionResult;
 
 public final class PatternRecognizerChainTest {
 

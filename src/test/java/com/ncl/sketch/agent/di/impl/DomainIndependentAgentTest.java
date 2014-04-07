@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -10,6 +10,7 @@ import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.RecognitionResult;
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.impl.DomainIndependentAgentImpl;
 
 public final class DomainIndependentAgentTest {
 
@@ -27,7 +28,7 @@ public final class DomainIndependentAgentTest {
         }
         final Stroke stroke = GeometricElements.stroke(x, y);
 
-        final DomainIndependentAgent agent = new DomainIndependentAgent();
+        final DomainIndependentAgentImpl agent = new DomainIndependentAgentImpl();
         final RecognitionResult result = agent.recognize(stroke);
 
         assertLinesEquals(result);
@@ -47,7 +48,7 @@ public final class DomainIndependentAgentTest {
         }
         final Stroke stroke = GeometricElements.stroke(x, y);
 
-        final DomainIndependentAgent agent = new DomainIndependentAgent();
+        final DomainIndependentAgentImpl agent = new DomainIndependentAgentImpl();
         final RecognitionResult result = agent.recognize(stroke);
 
         assertLinesEquals(result);
@@ -63,7 +64,7 @@ public final class DomainIndependentAgentTest {
         final Point first = stroke.get(0);
         final Point last = stroke.get(14);
 
-        final DomainIndependentAgent agent = new DomainIndependentAgent();
+        final DomainIndependentAgentImpl agent = new DomainIndependentAgentImpl();
         final RecognitionResult result = agent.recognize(stroke);
         assertLinesEquals(result, first, last);
         assertCirclesEquals(result);
@@ -81,7 +82,7 @@ public final class DomainIndependentAgentTest {
         final Point first3 = stroke.get(9);
         final Point last3 = stroke.get(14);
 
-        final DomainIndependentAgent agent = new DomainIndependentAgent();
+        final DomainIndependentAgentImpl agent = new DomainIndependentAgentImpl();
         final RecognitionResult result = agent.recognize(stroke);
         assertLinesEquals(result, first1, last1, first2, last2, first3, last3);
         assertCirclesEquals(result);

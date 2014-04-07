@@ -13,9 +13,18 @@ import javafx.scene.layout.VBox;
 
 public class ParameterSlider extends VBox {
 
-    private List<EventHandler<ParameterSliderEvent>> listeners;
+    private final List<EventHandler<ParameterSliderEvent>> listeners;
 
-    private Label label;
+    private final Label label;
+
+    public ParameterSlider(final String paramName, final double minValue, final double maxValue,
+            final double initialValue) {
+        this(paramName, minValue, maxValue, initialValue, true);
+    }
+
+    public ParameterSlider(final String paramName, final int minValue, final int maxValue, final int initialValue) {
+        this(paramName, minValue, maxValue, initialValue, false);
+    }
 
     private ParameterSlider(final String paramName, final double minValue, final double maxValue,
             final double initialValue, final boolean percentage) {
@@ -41,6 +50,7 @@ public class ParameterSlider extends VBox {
             slider.setMinorTickCount(1);
             slider.valueProperty().addListener(new ChangeListener<Number>() {
 
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public void changed(final ObservableValue<? extends Number> arg0, final Number arg1,
                         final Number newValue) {
@@ -57,6 +67,7 @@ public class ParameterSlider extends VBox {
             slider.setMinorTickCount(10);
             slider.valueProperty().addListener(new ChangeListener<Number>() {
 
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public void changed(final ObservableValue<? extends Number> arg0, final Number arg1,
                         final Number newValue) {
@@ -70,15 +81,6 @@ public class ParameterSlider extends VBox {
 
         }
         slider.setBlockIncrement(1);
-    }
-
-    public ParameterSlider(final String paramName, final double minValue, final double maxValue,
-            final double initialValue) {
-        this(paramName, minValue, maxValue, initialValue, true);
-    }
-
-    public ParameterSlider(final String paramName, final int minValue, final int maxValue, final int initialValue) {
-        this(paramName, minValue, maxValue, initialValue, false);
     }
 
     public void onParameterUpdate(final EventHandler<ParameterSliderEvent> handler) {

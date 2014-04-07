@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 /**
  * Parametric equation of a 2D line: <i>y = m * x + b</i>, where <i>m</i> is the slope and <i>b</i> the

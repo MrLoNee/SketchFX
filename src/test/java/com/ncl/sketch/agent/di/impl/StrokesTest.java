@@ -1,4 +1,4 @@
-package com.ncl.sketch.agent.di;
+package com.ncl.sketch.agent.di.impl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,6 +9,7 @@ import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.Stroke;
+import com.ncl.sketch.agent.di.impl.Strokes;
 
 public final class StrokesTest {
 
