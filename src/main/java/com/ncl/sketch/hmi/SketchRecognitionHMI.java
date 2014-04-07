@@ -7,57 +7,51 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.StringConverter;
 
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
 import com.ncl.sketch.agent.api.RecognitionResult;
-import com.ncl.sketch.agent.api.SketchRecognitionAgent;
 import com.ncl.sketch.agent.api.Stroke;
-import com.ncl.sketch.agent.di.DomainIndependantAgentParameters;
 import com.ncl.sketch.agent.di.DomainIndependentAgent;
 
 public class SketchRecognitionHMI extends Application {
 
-    private SketchRecognitionAgent sketchRecognitionAgent;
-
-    private DomainIndependantAgentParameters domainIndependantAgentParameters;
+    private DomainIndependentAgent domainIndependentAgent;
 
     private ScheduledExecutorService executor;
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final DomainIndependentAgent domainIndependentAgent = new DomainIndependentAgent();
-        domainIndependantAgentParameters = domainIndependentAgent;
-        sketchRecognitionAgent = domainIndependentAgent;
+        domainIndependentAgent = new DomainIndependentAgent();
         executor = Executors.newSingleThreadScheduledExecutor();
 
         final BorderPane borderPane = new BorderPane();
-        final Group container = new Group();
+        final Pane container = new Pane();
+        container.setPrefSize(500, 500);
+        borderPane.setCenter(container);
 
-        // borderPane.setCenter(container);
+        // if(System.getProperty("cheatMode",
+        // "false").equalsIgnoreCase("true")){
         final Node parametersPanel = createParametersPanel();
         borderPane.setRight(parametersPanel);
+        // }
 
-        final Scene scene = new Scene(container);
+        final Scene scene = new Scene(borderPane);
 
         final SketchListener sketchListener = new SketchListener(scene, container);
-        sketchListener.setOnSketchDone(new EventHandler<SketchEvent>() {
+        sketchListener.onSketchDone(new EventHandler<SketchEvent>() {
 
             @SuppressWarnings("synthetic-access")
             @Override
@@ -67,7 +61,7 @@ public class SketchRecognitionHMI extends Application {
                     public void run() {
 
                         final RecognitionResult recognitionResult =
-                                sketchRecognitionAgent.recognize(stroke(sketchEvent.getSketchPoints()));
+                                domainIndependentAgent.recognize(stroke(sketchEvent.getSketchPoints()));
 
                         final Collection<Line> lines = recognitionResult.lines();
                         final Collection<Circle> circles = recognitionResult.circles();
@@ -80,7 +74,7 @@ public class SketchRecognitionHMI extends Application {
                                     final javafx.scene.shape.Line lineFx =
                                             new javafx.scene.shape.Line(line.start().x(), line.start().y(),
                                                                         line.end().x(), line.end().y());
-                                    lineFx.setStroke(Color.GREEN);
+                                    lineFx.setStroke(Color.DARKBLUE);
                                     container.getChildren().add(lineFx);
                                 }
 
@@ -89,7 +83,7 @@ public class SketchRecognitionHMI extends Application {
                                             new javafx.scene.shape.Circle(circle.center().x(),
                                                                           circle.center().y(), circle.radius());
                                     circleFx.setFill(Color.TRANSPARENT);
-                                    circleFx.setStroke(Color.GREEN);
+                                    circleFx.setStroke(Color.DARKBLUE);
                                     container.getChildren().add(circleFx);
                                 }
 
@@ -118,43 +112,79 @@ public class SketchRecognitionHMI extends Application {
     }
 
     private Node createParametersPanel() {
-        final FlowPane flow = new FlowPane();
-        flow.setPadding(new Insets(5, 0, 5, 0));
-        flow.setVgap(4);
-        flow.setHgap(4);
-        flow.setPrefWrapLength(170); // preferred width allows for two columns
+        final VBox box = new VBox();
+        box.setPadding(new Insets(5, 0, 5, 0));
+        box.setSpacing(10);
+        box.setPadding(new Insets(0, 20, 10, 20));
 
         // k parameter
-        final Slider kSlider = new Slider(1, 10, domainIndependantAgentParameters.k());
-        kSlider.setBlockIncrement(1);
-        kSlider.setMajorTickUnit(1);
-        kSlider.setLabelFormatter(new StringConverter<Double>() {
+        final ParameterSlider kParamSlider = new ParameterSlider("Stroke k", 1, 10, domainIndependentAgent.k());
+        kParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
             @Override
-            public Double fromString(final String arg0) {
-                return 0d;
-            }
-
-            @Override
-            public String toString(final Double n) {
-                if (n < 2) {
-                    return "k";
-                }
-
-                return "";
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.k((int) (event.newValue()));
             }
         });
-        kSlider.valueProperty().addListener(new ChangeListener<Number>() {
+        box.getChildren().add(kParamSlider);
 
-            @SuppressWarnings("synthetic-access")
+        // line parameters
+        final ParameterSlider lineMinCorrelationParamSlider =
+                new ParameterSlider("Line min correlation", 0.0, 100.0,
+                                    domainIndependentAgent.lineRecognitionParameters().minCorrelation() * 100.0);
+        lineMinCorrelationParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
             @Override
-            public void changed(final ObservableValue<? extends Number> obsValue, final Number previousValue,
-                    final Number newValue) {
-                domainIndependantAgentParameters.k(newValue.intValue());
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.lineRecognitionParameters().minCorrelation(event.newValue());
             }
-
         });
-        flow.getChildren().add(kSlider);
-        return flow;
+        box.getChildren().add(lineMinCorrelationParamSlider);
+
+        final ParameterSlider lineMaxAreaRatioParamSlider =
+                new ParameterSlider("Line max area ratio", 0.0, 100.0,
+                                    domainIndependentAgent.lineRecognitionParameters().maxAreaError() * 100.0);
+        lineMinCorrelationParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
+            @Override
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.lineRecognitionParameters().maxAreaError(event.newValue());
+            }
+        });
+        box.getChildren().add(lineMaxAreaRatioParamSlider);
+
+        // circle parameters
+        final ParameterSlider circleMinCorrelationParamSlider =
+                new ParameterSlider("Circle min correlation", 0.0, 100.0,
+                                    domainIndependentAgent.circleRecognitionParameters().minCorrelation() * 100.0);
+        circleMinCorrelationParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
+            @Override
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.circleRecognitionParameters().minCorrelation(event.newValue());
+            }
+        });
+        box.getChildren().add(circleMinCorrelationParamSlider);
+
+        final ParameterSlider circleMaxAreaErrorParamSlider =
+                new ParameterSlider("Circle max area error", 0.0, 100.0,
+                                    domainIndependentAgent.circleRecognitionParameters().maxAreaError() * 100.0);
+        circleMaxAreaErrorParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
+            @Override
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.circleRecognitionParameters().maxAreaError(event.newValue());
+            }
+        });
+        box.getChildren().add(circleMaxAreaErrorParamSlider);
+
+        final ParameterSlider circleMaxSlopeErrorParamSlider =
+                new ParameterSlider("Circle max slope error", 0.0, 100.0,
+                                    domainIndependentAgent.circleRecognitionParameters().maxSlopeError() * 100.0);
+        circleMaxSlopeErrorParamSlider.onParameterUpdate(new EventHandler<ParameterSliderEvent>() {
+            @Override
+            public void handle(final ParameterSliderEvent event) {
+                domainIndependentAgent.circleRecognitionParameters().maxSlopeError(event.newValue());
+            }
+        });
+        box.getChildren().add(circleMaxSlopeErrorParamSlider);
+
+        return box;
     }
 
     private Stroke stroke(final List<Point2D> sketchPoints) {
