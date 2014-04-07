@@ -11,8 +11,34 @@ final class Geometry2D {
 
     private static final double ZERO = 0.000001;
 
+    private static final double TWO_PI = 2.0 * Math.PI;
+
     private Geometry2D() {
         // empty;
+    }
+
+    /**
+     * Returns the angle in <strong>radians</strong> between the horizontal line passing through the specified
+     * {@code reference} and the line passing through both the specified {@code point} and {@code reference}. The
+     * returned angle is in range of <i>0</i> to <i>2 * pi</i>.
+     * 
+     * @param point the {@link Point point}
+     * @param reference the {@link Point reference}
+     * @return the angle in <strong>radians</strong> between the horizontal line passing through the specified
+     *         {@code reference} and the line passing through both the specified {@code point} and
+     *         {@code reference}
+     */
+    static final double angleOf(final Point point, final Point reference) {
+        /*
+         * |A·B| = |A| |B| COS(θ)
+         * 
+         * |A×B| = |A| |B| SIN(θ)
+         */
+        final double[] v1 = vector(reference, point);
+        final Point to = point(reference.x() + 10, reference.y());
+        final double[] v2 = vector(reference, to);
+        final double angle = Math.atan2(exteriorProductOf(v2, v1), dotProductOf(v2, v1));
+        return angle < 0 ? angle + TWO_PI : angle;
     }
 
     /**
@@ -102,37 +128,62 @@ final class Geometry2D {
      * @return the distance between the two specified {@link Point point}s
      */
     static final double distance(final Point from, final Point to) {
-        return norm(vector(from, to));
+        return normOf(vector(from, to));
     }
 
     /**
-     * Returns the intersection {@link Point point} of the two lines defined by their parametric equations: <i>y =
-     * m * x + b</i>. Each line shall by specified as an array with two values: <i>[m, b]</i>.
+     * Returns the intersection {@link Point point} of the two lines defined by their {@link LineEquation
+     * parametric equation}s.
      * 
-     * @param line1 the equation of the first line
-     * @param line2 the equation of the second line
+     * @param line1 the {@link LineEquation parametric equation} of the first line
+     * @param line2 the {@link LineEquation parametric equation} of the second line
      * @return the intersection {@link Point point} of the two lines or <code>null</code> if the two lines are
      *         parallels
      * @throws CoincidentLineException if the two lines are coincident
      */
-    static final Point intersectionOf(final double[] line1, final double[] line2) throws CoincidentLineException {
-        final double m1 = line1[0];
-        final double m2 = line2[0];
-        final double b1 = line1[1];
-        final double b2 = line2[1];
-
+    static final Point intersectionOf(final LineEquation line1, final LineEquation line2)
+            throws CoincidentLineException {
         final Point result;
-        if (isZero(b1 - b2) && isZero(m1 - m2)) {
-            // coincident lines
-            throw new CoincidentLineException();
-        }
-        if (isZero(m1 - m2)) {
-            // parallel
+
+        if (line1.isVertical() && line2.isVertical()) {
+            /*
+             * both line are vertical, either coincident or parallel
+             */
+            if (equals(line1.xIntercept(), line2.xIntercept())) {
+                throw new CoincidentLineException();
+            }
             result = null;
+        } else if (line1.isVertical() || line2.isVertical()) {
+            /*
+             * one of the two line is vertical
+             */
+            final LineEquation line = line1.isVertical() ? line2 : line1;
+            final LineEquation vertical = line1.isVertical() ? line1 : line2;
+
+            /*
+             * y = m1 * x-intercept2 + b1
+             */
+            final double y = vertical.xIntercept() * line.slope() + line.yIntercept();
+            result = point(vertical.xIntercept(), y);
+
         } else {
-            final double x = (b2 - b1) / (m1 - m2);
-            final double y = m1 * x + b1;
-            result = point(x, y);
+            final double m1 = line1.slope();
+            final double m2 = line2.slope();
+            final double b1 = line1.yIntercept();
+            final double b2 = line2.yIntercept();
+
+            if (isZero(b1 - b2) && isZero(m1 - m2)) {
+                // coincident lines
+                throw new CoincidentLineException();
+            }
+            if (isZero(m1 - m2)) {
+                // parallel
+                result = null;
+            } else {
+                final double x = (b2 - b1) / (m1 - m2);
+                final double y = m1 * x + b1;
+                result = point(x, y);
+            }
         }
         return result;
     }
@@ -148,48 +199,77 @@ final class Geometry2D {
     }
 
     /**
-     * Returns [m, b] such that <i>y = m * x + b</i> for both specified {@link Point point}s.
+     * Returns {@link LineEquation parametric line equation} that fits both specified {@link Point point}s
      * 
      * @param p1 first point of the line
      * @param p2 second point of the line
-     * @return [m, b] such that <i>y = m * x + b</i> for both specified {@link Point point}s
+     * @return {@link LineEquation parametric line equation} that fits both specified {@link Point point}s
      */
-    static final double[] lineEquationOf(final Point p1, final Point p2) {
+    static final LineEquation lineEquationOf(final Point p1, final Point p2) {
         final double m = slope(p1, p2);
-        final double[] midPoint = midPoint(p1, p2);
 
-        /*
-         * y = m * x + b -> b = y - m * x
-         */
-        final double b = midPoint[1] - m * midPoint[0];
+        final LineEquation result;
+        if (Double.isFinite(m)) {
+            final double[] midPoint = midPointOf(p1, p2);
 
-        return new double[] { m, b };
+            /*
+             * y = m * x + b -> b = y - m * x
+             */
+            final double b = midPoint[1] - m * midPoint[0];
+
+            if (m == 0.0) {
+                result = LineEquation.horizontalLine(b);
+            } else {
+                result = LineEquation.line(m, b);
+
+            }
+        } else {
+            /*
+             * vertical line, x-intercept is x value of any of the two point
+             */
+            result = LineEquation.verticalLine(p1.x());
+        }
+        return result;
     }
 
     /**
-     * Returns the parameters of the perpendicular bisector of the two specified {@link Point point}s. The result
-     * is an array containing <i>m</i> as first element and <i>b</i> as second element. The equation of the
-     * perpendicular bisector being <i>y = m*x + b</i>.
+     * Returns {@link LineEquation parametric line equation} of the perpendicular bisector of the two specified
+     * {@link Point point}s.
      * 
      * @param p1 first point
      * @param p2 second point
-     * @return the parameters of the perpendicular bisector of the two specified {@link Point point}s
+     * @return the {@link LineEquation parametric line equation} perpendicular bisector of the two specified
+     *         {@link Point point}s
      */
-    static final double[] perpendicularBisectorOf(final Point p1, final Point p2) {
+    static final LineEquation perpendicularBisectorOf(final Point p1, final Point p2) {
         final double slope = slope(p1, p2);
         /*
          * slope of perpendicular bisector is the negative reciprocal of the slope of the two points.
          */
         final double m = -1 / slope;
 
-        final double[] midPoint = midPoint(p1, p2);
+        final double[] midPoint = midPointOf(p1, p2);
 
         /*
          * y = m * x + b -> b = y - m * x
          */
         final double b = midPoint[1] - m * midPoint[0];
 
-        return new double[] { m, b };
+        final LineEquation result;
+        if (Double.isFinite(m)) {
+            if (m == 0.0) {
+                result = LineEquation.horizontalLine(b);
+            } else {
+                result = LineEquation.line(m, b);
+            }
+        } else {
+            /*
+             * original line is horizontal, x-intercept is x value of any of the mid point
+             */
+            result = LineEquation.verticalLine(x(midPoint));
+        }
+        return result;
+
     }
 
     /**
@@ -253,11 +333,17 @@ final class Geometry2D {
         final double minX = Math.min(from.x(), to.x());
         final double maxY = Math.max(from.y(), to.y());
         final double minY = Math.min(from.y(), to.y());
-        return pt.x() > minX && pt.x() < maxX && pt.y() > minY && pt.y() < maxY;
+        final boolean withinX = (pt.x() > minX || equals(pt.x(), minX)) && (pt.x() < maxX || equals(pt.x(), maxX));
+        final boolean withinY = (pt.y() > minY || equals(pt.y(), minY)) && (pt.y() < maxY || equals(pt.y(), maxY));
+        return withinX && withinY;
     }
 
     private static double dotProductOf(final double[] v1, final double[] v2) {
         return x(v1) * x(v2) + y(v1) * y(v2);
+    }
+
+    private static boolean equals(final double a, final double b) {
+        return Math.abs(a - b) < ZERO;
     }
 
     private static double exteriorProductOf(final double[] v1, final double[] v2) {
@@ -268,8 +354,8 @@ final class Geometry2D {
      * returns [x,y] if such an intersection exists, [] if the two lines are collinear, null otherwise.
      */
     private static double[] intersectionOf(final Point a, final Point b, final Point c, final Point d) {
-        final double[] eq1 = lineEquationOf(a, b);
-        final double[] eq2 = lineEquationOf(c, d);
+        final LineEquation eq1 = lineEquationOf(a, b);
+        final LineEquation eq2 = lineEquationOf(c, d);
         double[] result;
         try {
             final Point i = intersectionOf(eq1, eq2);
@@ -291,16 +377,16 @@ final class Geometry2D {
     }
 
     private static boolean isZero(final double val) {
-        return Math.abs(val) < ZERO;
+        return equals(val, 0.0);
     }
 
-    private static double[] midPoint(final Point p1, final Point p2) {
+    private static double[] midPointOf(final Point p1, final Point p2) {
         final double midX = (p1.x() + p2.x()) / 2;
         final double midY = (p1.y() + p2.y()) / 2;
         return new double[] { midX, midY };
     }
 
-    private static double norm(final double[] v) {
+    private static double normOf(final double[] v) {
         return Math.sqrt(x(v) * x(v) + y(v) * y(v));
     }
 

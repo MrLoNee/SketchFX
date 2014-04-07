@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.ncl.sketch.agent.api.Arc;
 import com.ncl.sketch.agent.api.Circle;
 import com.ncl.sketch.agent.api.Line;
 import com.ncl.sketch.agent.api.Point;
@@ -12,6 +13,18 @@ import com.ncl.sketch.agent.api.Stroke;
 public final class StrokesTest {
 
     private static final double DELTA = 0.00001;
+
+    @Test
+    public final void arc() {
+        final double[] x = { 101, 102, 103, 103, 102, 101 };
+        final double[] y = { 100, 100, 101, 102, 103, 103 };
+        final Stroke stroke = GeometricElements.stroke(x, y);
+        final Arc arc = Strokes.arc(stroke);
+        assertEquals(101.4375, arc.center().x(), DELTA);
+        assertEquals(101.5, arc.center().y(), DELTA);
+        assertEquals(1.5625, arc.radius(), DELTA);
+
+    }
 
     @Test
     public final void circle() {

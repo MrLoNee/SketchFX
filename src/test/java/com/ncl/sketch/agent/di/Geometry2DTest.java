@@ -16,6 +16,19 @@ public final class Geometry2DTest {
     private static final double DELTA = 0.00001;
 
     @Test
+    public final void angleOf() {
+        final Point reference = GeometricElements.point(15, 45);
+        Point point = GeometricElements.point(15, 55);
+        assertEquals(Math.PI / 2.0, Geometry2D.angleOf(point, reference), DELTA);
+        point = GeometricElements.point(-15, 45);
+        assertEquals(Math.PI, Geometry2D.angleOf(point, reference), DELTA);
+        point = GeometricElements.point(15, 35);
+        assertEquals(3 * Math.PI / 2.0, Geometry2D.angleOf(point, reference), DELTA);
+        point = GeometricElements.point(15, 45);
+        assertEquals(0.0, Geometry2D.angleOf(point, reference), DELTA);
+    }
+
+    @Test
     public final void circleArea() {
         final Circle circle = new Circle(null, 154.0);
         assertEquals(74506.01137, Geometry2D.areaOf(circle), DELTA);
@@ -44,24 +57,70 @@ public final class Geometry2DTest {
 
     @Test
     public final void intersectionOf() throws CoincidentLineException {
-        final double[] line1 = { 1, 3 };
-        final double[] line2 = { -2, 12 };
+        final LineEquation line1 = LineEquation.line(1, 3);
+        final LineEquation line2 = LineEquation.line(-2, 12);
         final Point i = Geometry2D.intersectionOf(line1, line2);
         assertEquals(3, i.x(), DELTA);
         assertEquals(6, i.y(), DELTA);
     }
 
+    @Test
+    public final void intersectionOfBothHorizontal() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.horizontalLine(3);
+        final LineEquation line2 = LineEquation.horizontalLine(4);
+        assertNull(Geometry2D.intersectionOf(line1, line2));
+    }
+
     @Test(expected = CoincidentLineException.class)
-    public final void intersectionOfCoincident() throws CoincidentLineException {
-        final double[] line1 = { 1, 3 };
-        final double[] line2 = { 1.00000009, 3.0000009 };
+    public final void intersectionOfBothHorizontalCoincident() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.horizontalLine(4);
+        final LineEquation line2 = LineEquation.horizontalLine(4);
         Geometry2D.intersectionOf(line1, line2);
     }
 
     @Test
+    public final void intersectionOfBothVertical() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.verticalLine(5);
+        final LineEquation line2 = LineEquation.verticalLine(6);
+        assertNull(Geometry2D.intersectionOf(line1, line2));
+    }
+
+    @Test(expected = CoincidentLineException.class)
+    public final void intersectionOfBothVerticalCoincident() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.verticalLine(5);
+        final LineEquation line2 = LineEquation.verticalLine(5);
+        Geometry2D.intersectionOf(line1, line2);
+    }
+
+    @Test(expected = CoincidentLineException.class)
+    public final void intersectionOfCoincident() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.line(1, 3);
+        final LineEquation line2 = LineEquation.line(1.00000009, 3.0000009);
+        Geometry2D.intersectionOf(line1, line2);
+    }
+
+    @Test
+    public final void intersectionOfLineAndHorizontalLine() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.line(1, 3);
+        final LineEquation line2 = LineEquation.horizontalLine(5);
+        final Point i = Geometry2D.intersectionOf(line1, line2);
+        assertEquals(2, i.x(), DELTA);
+        assertEquals(5, i.y(), DELTA);
+    }
+
+    @Test
+    public final void intersectionOfLineAndVerticalLine() throws CoincidentLineException {
+        final LineEquation line1 = LineEquation.line(1, 3);
+        final LineEquation line2 = LineEquation.verticalLine(-7);
+        final Point i = Geometry2D.intersectionOf(line1, line2);
+        assertEquals(-7, i.x(), DELTA);
+        assertEquals(-4, i.y(), DELTA);
+    }
+
+    @Test
     public final void intersectionOfParallel() throws CoincidentLineException {
-        final double[] line1 = { 1, 3 };
-        final double[] line2 = { 1, 4 };
+        final LineEquation line1 = LineEquation.line(1, 3);
+        final LineEquation line2 = LineEquation.line(1, 4);
         assertNull(Geometry2D.intersectionOf(line1, line2));
     }
 
@@ -77,18 +136,67 @@ public final class Geometry2DTest {
     public final void lineEquationOf() {
         final Point p1 = GeometricElements.point(2, 5);
         final Point p2 = GeometricElements.point(8, 3);
-        final double[] pb = Geometry2D.lineEquationOf(p1, p2);
-        assertEquals(-1.0 / 3.0, pb[0], DELTA);
-        assertEquals(5.666666666, pb[1], DELTA);
+        final LineEquation eq = Geometry2D.lineEquationOf(p1, p2);
+        assertEquals(-1.0 / 3.0, eq.slope(), DELTA);
+        assertEquals(5.666666666, eq.yIntercept(), DELTA);
+        assertEquals(17.0, eq.xIntercept(), DELTA);
+        assertFalse(eq.isVertical());
+    }
+
+    @Test
+    public final void lineEquationOfHorizontalLine() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(8, 5);
+        final LineEquation eq = Geometry2D.lineEquationOf(p1, p2);
+        assertEquals(0, eq.slope(), DELTA);
+        assertEquals(5, eq.yIntercept(), DELTA);
+        assertTrue(Double.isInfinite(eq.xIntercept()));
+        assertFalse(eq.isVertical());
+    }
+
+    @Test
+    public final void lineEquationOfVerticalLine() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(2, 3);
+        final LineEquation eq = Geometry2D.lineEquationOf(p1, p2);
+        assertTrue(Double.isInfinite(eq.slope()));
+        assertTrue(Double.isInfinite(eq.yIntercept()));
+        assertEquals(2, eq.xIntercept(), DELTA);
+        assertTrue(eq.isVertical());
     }
 
     @Test
     public final void perpendicularBisectorOf() {
         final Point p1 = GeometricElements.point(2, 5);
         final Point p2 = GeometricElements.point(8, 3);
-        final double[] pb = Geometry2D.perpendicularBisectorOf(p1, p2);
-        assertEquals(3, pb[0], DELTA);
-        assertEquals(-11, pb[1], DELTA);
+        final LineEquation eq = Geometry2D.perpendicularBisectorOf(p1, p2);
+        assertEquals(3, eq.slope(), DELTA);
+        assertEquals(-11, eq.yIntercept(), DELTA);
+        assertEquals(3.6666666667, eq.xIntercept(), DELTA);
+        assertFalse(eq.isVertical());
+
+    }
+
+    @Test
+    public final void perpendicularBisectorOfHorizontalLine() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(8, 5);
+        final LineEquation eq = Geometry2D.perpendicularBisectorOf(p1, p2);
+        assertTrue(Double.isInfinite(eq.slope()));
+        assertTrue(Double.isInfinite(eq.yIntercept()));
+        assertEquals(5, eq.xIntercept(), DELTA);
+        assertTrue(eq.isVertical());
+    }
+
+    @Test
+    public final void perpendicularBisectorOfVerticalLine() {
+        final Point p1 = GeometricElements.point(2, 5);
+        final Point p2 = GeometricElements.point(2, 3);
+        final LineEquation eq = Geometry2D.perpendicularBisectorOf(p1, p2);
+        assertEquals(0, eq.slope(), DELTA);
+        assertEquals(4, eq.yIntercept(), DELTA);
+        assertTrue(Double.isInfinite(eq.xIntercept()));
+        assertFalse(eq.isVertical());
     }
 
     @Test
